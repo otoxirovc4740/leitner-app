@@ -346,6 +346,23 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .card-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.1s;
+        }
+        
+        .action-icon:hover {
+            transform: scale(1.2);
+        }
+
         .io-buttons {
             display: flex;
             gap: 10px;
@@ -510,9 +527,22 @@
             }
         }
 
+        function editCard(id) {
+            let card = decks[currentDeck].find(c => c.id === id);
+            if (card) {
+                document.getElementById('frontInput').value = card.front;
+                document.getElementById('backInput').value = card.back;
+                editingCardId = id;
+                document.getElementById('btnAdd').innerText = "Saqlash";
+                document.getElementById('frontInput').focus();
+            }
+        }
+
         function deleteCard(id) {
-            decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id);
-            saveAll();
+            if(confirm("Haqiqatan ham bu kartochkani o'chirmoqchimisiz?")) {
+                decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id);
+                saveAll();
+            }
         }
 
         function flipCard() {
@@ -541,7 +571,11 @@
             triggerGlow(isCorrect);
 
             let card = decks[currentDeck][currentCardIndex];
-            if (isCorrect) { if (card.box < 5) card.box++; } else { card.box = 1; }
+            if (isCorrect) { 
+                if (card.box < 5) card.box++; 
+            } else { 
+                card.box = 1; 
+            }
 
             let cardEl = document.getElementById('activeCard');
             if (cardEl.classList.contains('flipped')) {
@@ -582,10 +616,13 @@
                 document.getElementById('progressText').innerText = '0%';
             }
 
-            // Update Active Card
+            // Update Active Card - Yaxshilangan Random tizimi
             let available = cards.filter(c => c.box < 5);
             if (available.length > 0) {
-                let active = available[0];
+                // Tasodifiy kartochka tanlash
+                let randomIndex = Math.floor(Math.random() * available.length);
+                let active = available[randomIndex];
+                
                 currentCardIndex = cards.findIndex(c => c.id === active.id);
                 document.getElementById('frontText').innerText = active.front;
                 document.getElementById('cardBack').innerText = active.back;
@@ -607,8 +644,14 @@
                     let div = document.createElement('div');
                     div.className = 'card-item';
                     div.innerHTML = `
-                        <div><strong>${c.front}</strong> - ${c.back} <span style="font-size:0.75rem; color:var(--primary)">(${c.box}-quti)</span></div>
-                        <button onclick="deleteCard(${c.id})" style="background:none; border:none; cursor:pointer;">🗑️</button>
+                        <div>
+                            <strong>${c.front}</strong> - ${c.back} 
+                            <span style="font-size:0.75rem; color:var(--primary); margin-left:5px;">(${c.box}-quti)</span>
+                        </div>
+                        <div class="card-item-actions">
+                            <button class="action-icon" onclick="editCard(${c.id})" title="Tahrirlash">✏️</button>
+                            <button class="action-icon" onclick="deleteCard(${c.id})" title="O'chirish">🗑️</button>
+                        </div>
                     `;
                     list.appendChild(div);
                 });
