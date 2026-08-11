@@ -17,7 +17,16 @@
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --shadow-3d: 0 8px 0 #cbd5e1;
+            --shadow-3d: 0 6px 0 #cbd5e1;
+        }
+
+        body.dark-mode {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --shadow-3d: 0 6px 0 #020617;
         }
 
         * {
@@ -35,86 +44,144 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        body.glow-success { background-color: #e6f4ea; box-shadow: inset 0 0 80px rgba(16, 185, 129, 0.2); }
-        body.glow-danger { background-color: #fce8e8; box-shadow: inset 0 0 80px rgba(239, 68, 68, 0.2); }
+        body.glow-success { background-color: #e6f4ea; }
+        body.glow-danger { background-color: #fce8e8; }
+
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 600px;
-            margin-bottom: 20px;
         }
 
         .streak-badge {
-            background: #fff;
+            background: var(--card-bg);
             padding: 8px 16px;
             border-radius: 16px;
             font-weight: 800;
             font-size: 1.1rem;
-            box-shadow: 0 4px 0 #cbd5e1;
+            box-shadow: var(--shadow-3d);
             border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        /* Deck Selector */
+        /* 100% Eniga Moslashtirilgan Tugmalar Bloklari */
         .top-controls {
             width: 100%;
-            max-width: 600px;
             background: var(--card-bg);
             padding: 16px;
             border-radius: 20px;
-            box-shadow: 0 8px 0 #cbd5e1;
+            box-shadow: var(--shadow-3d);
             border: 1px solid var(--border-color);
-            margin-bottom: 24px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .deck-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        select { flex: 1; min-width: 150px; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); background: #f8fafc; font-weight: 600; }
-        
-        .btn-deck-add, button.btn-add {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #4338ca;
+        .grid-1 { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+
+        @media (max-width: 480px) {
+            .grid-2 { grid-template-columns: 1fr; }
         }
-        .btn-deck-add:active, button.btn-add:active { transform: translateY(2px); box-shadow: 0 2px 0 #4338ca; }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        /* Barcha Tugmalar 100% Enini Egallaydi */
+        .btn-full {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: var(--shadow-3d);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-full:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #cbd5e1;
+        }
+
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-secondary { background: #475569; color: #fff; }
+        .btn-info { background: #0284c7; color: #fff; }
+        .btn-warning { background: #d97706; color: #fff; }
+        .btn-theme { background: #8b5cf6; color: #fff; }
 
         /* Progress Bar */
-        .progress-wrapper { width: 100%; max-width: 600px; margin-bottom: 20px; }
-        .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
-        .progress-bar-bg { width: 100%; background: #e2e8f0; border-radius: 10px; height: 12px; overflow: hidden; }
+        .progress-wrapper { width: 100%; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
+        .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 10px; height: 12px; overflow: hidden; }
         .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.4s ease; }
 
         /* Input Section */
         .input-section {
-            background: var(--card-bg); padding: 16px; border-radius: 20px;
-            box-shadow: 0 8px 0 #cbd5e1; border: 1px solid var(--border-color);
-            display: flex; gap: 10px; margin-bottom: 24px; width: 100%; max-width: 600px; flex-wrap: wrap;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-3d);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
         }
-        input { flex: 1 1 180px; padding: 12px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-color);
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
 
         /* Review Notification Banner */
         .review-banner {
-            width: 100%; max-width: 600px; background: #fffbeb; border: 1px solid #fcd34d; color: #b45309;
-            padding: 12px; border-radius: 12px; font-weight: 600; text-align: center; margin-bottom: 20px; display: none;
+            width: 100%;
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            color: #b45309;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-align: center;
+            display: none;
         }
 
         /* 3D Flip Card */
-        .card-container { width: 100%; max-width: 400px; height: 250px; perspective: 1000px; margin-bottom: 24px; }
+        .card-container { width: 100%; height: 240px; perspective: 1000px; }
         .card { 
             width: 100%; height: 100%; position: relative; transform-style: preserve-3d; 
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -124,78 +191,71 @@
         .card-face {
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 24px; border-radius: 24px; background: var(--card-bg); font-size: 1.25rem; font-weight: 700; text-align: center;
-            box-shadow: 0 10px 0 #cbd5e1; border: 1px solid var(--border-color); overflow: hidden;
+            padding: 24px; border-radius: 24px; background: var(--card-bg); font-size: 1.3rem; font-weight: 700; text-align: center;
+            box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); overflow: hidden;
         }
-        .audio-btn { position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 0 #cbd5e1; }
-        .audio-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #cbd5e1; }
+        .audio-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-3d); font-size: 1.1rem; }
+        .audio-btn:active { transform: translateY(2px); }
         .card-back { transform: rotateY(180deg); color: var(--primary); }
 
         .card-img { max-height: 80px; max-width: 90%; margin-bottom: 10px; border-radius: 10px; object-fit: cover; }
         .leech-tag { position: absolute; top: 15px; left: 15px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 4px 8px; border-radius: 8px; border: 1px solid #fca5a5; font-weight: 800; }
 
+        /* Yozma Tekshirish Rejimi */
+        .typing-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
         /* Controls */
-        .controls { display: flex; gap: 16px; margin-bottom: 30px; width: 100%; max-width: 400px; }
-        .btn-action { flex: 1; padding: 14px; border: none; border-radius: 16px; font-size: 1rem; font-weight: 800; cursor: pointer; }
-        .btn-wrong { background: var(--danger-bg); color: var(--danger); box-shadow: 0 6px 0 #fca5a5; }
-        .btn-correct { background: var(--success-bg); color: var(--success); box-shadow: 0 6px 0 #6ee7b7; }
-        .btn-wrong:active { transform: translateY(3px); box-shadow: 0 2px 0 #fca5a5; }
-        .btn-correct:active { transform: translateY(3px); box-shadow: 0 2px 0 #6ee7b7; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+        .btn-wrong { background: var(--danger-bg); color: var(--danger); }
+        .btn-correct { background: var(--success-bg); color: var(--success); }
 
         /* Qutilar Dizayni */
         .boxes-container {
             display: grid; 
             grid-template-columns: repeat(6, 1fr); 
-            gap: 12px;
+            gap: 10px;
             width: 100%; 
-            max-width: 600px; 
-            margin-bottom: 30px; 
             align-items: end;
         }
         
         .box {
             background: var(--card-bg); 
             border-radius: 16px; 
-            padding: 12px 8px; 
+            padding: 12px 6px; 
             text-align: center;
             border: 1px solid var(--border-color); 
             border-top: 4px solid var(--primary);
-            box-shadow: 0 6px 0 #cbd5e1;
+            box-shadow: var(--shadow-3d);
             cursor: pointer;
-            transition: all 0.1s ease;
         }
 
-        .box:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #cbd5e1;
-        }
-        
         .box:nth-child(1), .box:nth-child(2), .box:nth-child(3) { grid-column: span 2; }
         .box:nth-child(4), .box:nth-child(5) { grid-column: span 3; }
 
         .box h3 { font-size: 0.75rem; color: var(--text-muted); }
-        .box .count { font-size: 1.3rem; font-weight: 800; }
-        .box .due { font-size: 0.7rem; color: var(--danger); font-weight: 700; margin-top: 4px; }
+        .box .count { font-size: 1.2rem; font-weight: 800; }
+        .box .due { font-size: 0.7rem; color: var(--danger); font-weight: 700; margin-top: 2px; }
 
-        /* Statistics Panel (100% Moslashuvchan Tuzatilgan) */
+        /* Analytics Panel (100% Moslashgan) */
         .stats-section {
             width: 100%; 
-            max-width: 600px; 
             background: var(--card-bg); 
             border-radius: 20px;
             padding: 20px; 
-            box-shadow: 0 8px 0 #cbd5e1; 
+            box-shadow: var(--shadow-3d); 
             border: 1px solid var(--border-color);
-            margin-bottom: 30px; 
             display: none;
-            box-sizing: border-box;
         }
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
-        .stat-card { background: #f8fafc; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); }
-        .stat-card .num { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
-        .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat-card { background: var(--bg-color); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); }
+        .stat-card .num { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+        .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
         
-        /* Bar chart konteyneri 100% ga chegaralandi */
         .chart-container { 
             display: flex; 
             align-items: flex-end; 
@@ -205,21 +265,32 @@
             padding-top: 20px; 
             border-top: 1px dashed var(--border-color); 
             width: 100%;
-            box-sizing: border-box;
+        }
+
+        /* Ommaviy yuklash panel */
+        .bulk-section {
+            display: none;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-3d);
+            border: 1px solid var(--border-color);
+            flex-direction: column;
+            gap: 10px;
         }
 
         /* Card List */
-        .list-section { width: 100%; max-width: 600px; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: 0 8px 0 #cbd5e1; border: 1px solid var(--border-color); margin-bottom: 30px; }
-        .card-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color); }
+        .list-section { width: 100%; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); }
+        .card-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .card-item-actions { display: flex; gap: 10px; }
         .action-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; }
 
-        .io-buttons { display: flex; gap: 10px; width: 100%; max-width: 600px; }
-        .btn-io { flex: 1; background: #fff; border: 1px solid var(--border-color); padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 0 #cbd5e1; }
-        .btn-io:active { transform: translateY(2px); box-shadow: 0 2px 0 #cbd5e1; }
+        .hotkey-info { font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 4px; }
     </style>
 </head>
 <body>
+
+<div class="app-container">
 
     <div class="header">
         <h1>Leitner Pro</h1>
@@ -227,29 +298,45 @@
     </div>
 
     <div class="top-controls">
-        <div class="deck-row">
+        <div class="grid-1">
             <select id="deckSelect" onchange="changeDeck()"></select>
-            <button class="btn-deck-add" onclick="createDeck()">+ Yangi To'plam</button>
         </div>
-        <div class="deck-row">
-            <button class="btn-deck-add" style="background:#475569" onclick="enableNotifications()">🔔 Bildirishnomalarni yoqish</button>
-            <button class="btn-deck-add" style="background:#0284c7" onclick="toggleStats()">📊 Statistika</button>
+        <div class="grid-1">
+            <button class="btn-full btn-primary" onclick="createDeck()">+ Yangi To'plam Yaratish</button>
+        </div>
+        <div class="grid-2">
+            <button class="btn-full btn-info" onclick="toggleStats()">📊 Statistika</button>
+            <button class="btn-full btn-warning" onclick="enableNotifications()">🔔 Bildirishnomalar</button>
+        </div>
+        <div class="grid-2">
+            <button class="btn-full btn-theme" onclick="toggleDarkMode()">🌙 Tungi Rejim</button>
+            <button class="btn-full btn-secondary" id="soundBtn" onclick="toggleSound()">🔊 Ovoz: Yoqilgan</button>
+        </div>
+        <div class="grid-1">
+            <button class="btn-full btn-secondary" style="background:#059669; color:#fff;" onclick="toggleBulk()">📋 Ommaviy So'z Yuklash (Bulk)</button>
         </div>
     </div>
 
     <div class="progress-wrapper">
         <div class="progress-info">
-            <span>O'zlashtirish ko'rsatkichi</span>
+            <span>O'zlashtirish darajasi</span>
             <span id="progressText">0%</span>
         </div>
         <div class="progress-bar-bg"><div id="progressBar" class="progress-bar-fill"></div></div>
     </div>
 
     <div class="input-section">
-        <input type="text" id="frontInput" placeholder="Savol / So'z (Oldi) (Masalan: {{cloze}})">
-        <input type="text" id="backInput" placeholder="Javob / Tarjima (Orqasi)">
-        <input type="text" id="imgInput" placeholder="Rasm URL (Ixtiyoriy)">
-        <button class="btn-add" id="btnAdd" onclick="addOrUpdateCard()">Qo'shish</button>
+        <input type="text" id="frontInput" placeholder="Savol / So'z (Masalan: {{cloze}} test)">
+        <input type="text" id="backInput" placeholder="Javob / Tarjima">
+        <input type="text" id="imgInput" placeholder="Rasm URL havolasi (Ixtiyoriy)">
+        <button class="btn-full btn-primary" id="btnAdd" onclick="addOrUpdateCard()">Qo'shish</button>
+    </div>
+
+    <div class="bulk-section" id="bulkSection">
+        <h3 style="font-size:1rem;">📋 Ommaviy so'z qo'shish</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted);">Har bir qatorga: <b>So'z, Tarjima</b> ko'rinishida yozing:</p>
+        <textarea id="bulkInput" rows="5" placeholder="apple, olma&#10;banana, banan&#10;cat, mushuk"></textarea>
+        <button class="btn-full btn-primary" onclick="processBulkImport()">Saqlash va Qo'shish</button>
     </div>
 
     <div id="reviewBanner" class="review-banner">
@@ -260,21 +347,27 @@
         <div class="card" id="activeCard" onclick="flipCard()">
             <div class="card-face card-front">
                 <div id="leechBadgeFront" class="leech-tag" style="display:none;">⚠️ Muammoli</div>
-                <img id="frontImg" class="card-img" style="display:none;" alt="Card Visual">
+                <img id="frontImg" class="card-img" style="display:none;" alt="Visual">
                 <div id="frontText">Bo'sh</div>
             </div>
             <div class="card-face card-back">
                 <button class="audio-btn" id="audioBtn" onclick="speakCurrent(event)">🔊</button>
-                <img id="backImg" class="card-img" style="display:none;" alt="Card Visual">
+                <img id="backImg" class="card-img" style="display:none;" alt="Visual">
                 <div id="cardBack">Javob</div>
             </div>
         </div>
     </div>
 
-    <div class="controls">
-        <button class="btn-action btn-wrong" onclick="processCard(false)">✕ Xato (Qulash)</button>
-        <button class="btn-action btn-correct" onclick="processCard(true)">✓ To'g'ri (Ko'tarilish)</button>
+    <div class="typing-section">
+        <input type="text" id="typeInput" placeholder="Javobingizni yozib tekshiring (Enter)..." onkeydown="if(event.key==='Enter') checkTypedAnswer()">
+        <div id="typeFeedback" style="font-size:0.85rem; font-weight:700; text-align:center; display:none;"></div>
     </div>
+
+    <div class="controls">
+        <button class="btn-full btn-wrong" onclick="processCard(false)">✕ Xato (← / 1)</button>
+        <button class="btn-full btn-correct" onclick="processCard(true)">✓ To'g'ri (→ / 2)</button>
+    </div>
+    <div class="hotkey-info">💡 Klaviatura: [Space] Flip | [←] Xato | [→] To'g'ri | [↑] Audio</div>
 
     <div class="boxes-container">
         <div class="box"><h3>1-Quti</h3><div class="count" id="count-1">0</div><div class="due" id="due-1"></div></div>
@@ -293,7 +386,7 @@
             </div>
             <div class="stat-card">
                 <div class="num" id="statAccuracy">0%</div>
-                <div class="lbl">Aniqlik (Accuracy)</div>
+                <div class="lbl">Aniqlik Ko'rsatkichi</div>
             </div>
         </div>
         <h3 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Oxirgi 7 kunlik faollik:</h3>
@@ -305,319 +398,419 @@
         <div id="cardList"></div>
     </div>
 
-    <div class="io-buttons">
-        <button class="btn-io" onclick="exportData()">📁 Faylni Saqlash (Export)</button>
-        <button class="btn-io" onclick="document.getElementById('importFile').click()">📥 Yuklash (Import)</button>
+    <div class="grid-2">
+        <button class="btn-full btn-secondary" onclick="exportData()">📁 Faylni Saqlash (Export)</button>
+        <button class="btn-full btn-secondary" onclick="document.getElementById('importFile').click()">📥 Yuklash (Import)</button>
         <input type="file" id="importFile" style="display:none;" onchange="importData(event)" accept=".json">
     </div>
 
-    <script>
-        let decks = JSON.parse(localStorage.getItem('leitner_decks')) || { "Asosiy": [] };
-        let currentDeck = localStorage.getItem('leitner_current_deck') || "Asosiy";
-        let currentCardIndex = -1;
-        let editingCardId = null;
+</div>
 
-        const boxIntervals = { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
+<script>
+    let decks = JSON.parse(localStorage.getItem('leitner_decks')) || { "Asosiy": [] };
+    let currentDeck = localStorage.getItem('leitner_current_deck') || "Asosiy";
+    let soundEnabled = JSON.parse(localStorage.getItem('leitner_sound')) ?? true;
+    let currentCardIndex = -1;
+    let editingCardId = null;
 
-        Object.keys(decks).forEach(deckName => {
-            decks[deckName].forEach(card => {
-                if (!card.nextReview) card.nextReview = Date.now();
-                if (card.fails === undefined) card.fails = 0;
+    const boxIntervals = { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
+
+    // Migratsiya va xavfsizlik
+    Object.keys(decks).forEach(deckName => {
+        decks[deckName].forEach(card => {
+            if (!card.nextReview) card.nextReview = Date.now();
+            if (card.fails === undefined) card.fails = 0;
+        });
+    });
+
+    // Dark mode boshqaruvi
+    if (localStorage.getItem('leitner_dark') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('leitner_dark', document.body.classList.contains('dark-mode'));
+    }
+
+    // Audio synth effektlar (Web Audio API)
+    function playSound(type) {
+        if (!soundEnabled) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            const now = ctx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'flip') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(300, now);
+                gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
+            }
+        } catch(e) {}
+    }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        localStorage.setItem('leitner_sound', JSON.stringify(soundEnabled));
+        document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan";
+    }
+
+    // Hotkey / Klaviatura boshqaruvi
+    window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        if (e.code === 'Space') { e.preventDefault(); flipCard(); }
+        else if (e.code === 'ArrowLeft' || e.key === '1') { e.preventDefault(); processCard(false); }
+        else if (e.code === 'ArrowRight' || e.key === '2') { e.preventDefault(); processCard(true); }
+        else if (e.code === 'ArrowUp' || e.key === '3') { e.preventDefault(); speakCurrent(e); }
+    });
+
+    function enableNotifications() {
+        if ("Notification" in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    alert("Bildirishnomalar yoqildi!");
+                    checkAndNotify();
+                }
             });
+        }
+    }
+
+    function checkAndNotify() {
+        let totalDue = 0;
+        Object.keys(decks).forEach(d => {
+            totalDue += decks[d].filter(c => c.box < 5 && c.nextReview <= Date.now()).length;
+        });
+        if (totalDue > 0 && Notification.permission === "granted") {
+            new Notification("Leitner Pro", { body: `Bugun takrorlashingiz kerak bo'lgan ${totalDue} ta so'z bor!`, icon: "🔥" });
+        }
+    }
+
+    function updateStreak() {
+        let lastVisit = localStorage.getItem('leitner_last_date');
+        let streak = parseInt(localStorage.getItem('leitner_streak')) || 0;
+        let today = new Date().toDateString();
+
+        if (lastVisit !== today) {
+            let yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+            if (lastVisit === yesterday.toDateString()) streak++;
+            else streak = 1; 
+            
+            localStorage.setItem('leitner_last_date', today);
+            localStorage.setItem('leitner_streak', streak);
+            checkAndNotify();
+        }
+        document.getElementById('streakDays').innerText = streak;
+    }
+
+    function saveAll() {
+        localStorage.setItem('leitner_decks', JSON.stringify(decks));
+        localStorage.setItem('leitner_current_deck', currentDeck);
+        updateUI();
+    }
+
+    function createDeck() {
+        let name = prompt("Yangi to'plam nomini kiriting:");
+        if (name && !decks[name]) { decks[name] = []; currentDeck = name; saveAll(); }
+    }
+
+    function changeDeck() { currentDeck = document.getElementById('deckSelect').value; saveAll(); }
+
+    function formatCloze(text, isBack = false) {
+        if (!text) return "";
+        return text.replace(/\{\{(.*?)\}\}/g, (match, p1) => {
+            return isBack 
+                ? `<span style="color:var(--success); font-weight:bold; text-decoration:underline;">${p1}</span>`
+                : `<span style="background:#e0e7ff; color:var(--primary); padding:2px 8px; border-radius:6px; font-weight:bold;">[...]</span>`;
+        });
+    }
+
+    function addOrUpdateCard() {
+        const front = document.getElementById('frontInput').value.trim();
+        const back = document.getElementById('backInput').value.trim();
+        const img = document.getElementById('imgInput').value.trim();
+
+        if (front && back) {
+            if (editingCardId) {
+                let card = decks[currentDeck].find(c => c.id === editingCardId);
+                if (card) { card.front = front; card.back = back; card.img = img; }
+                editingCardId = null; document.getElementById('btnAdd').innerText = "Qo'shish";
+            } else {
+                decks[currentDeck].push({ id: Date.now(), front, back, img, box: 1, nextReview: Date.now(), fails: 0 });
+            }
+            document.getElementById('frontInput').value = '';
+            document.getElementById('backInput').value = '';
+            document.getElementById('imgInput').value = '';
+            saveAll();
+        }
+    }
+
+    function editCard(id) {
+        let card = decks[currentDeck].find(c => c.id === id);
+        if (card) {
+            document.getElementById('frontInput').value = card.front;
+            document.getElementById('backInput').value = card.back;
+            document.getElementById('imgInput').value = card.img || '';
+            editingCardId = id; document.getElementById('btnAdd').innerText = "Saqlash";
+            document.getElementById('frontInput').focus();
+        }
+    }
+
+    function deleteCard(id) {
+        if(confirm("O'chirmoqchimisiz?")) {
+            decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id); saveAll();
+        }
+    }
+
+    function flipCard() {
+        if (currentCardIndex !== -1) {
+            playSound('flip');
+            document.getElementById('activeCard').classList.toggle('flipped');
+        }
+    }
+
+    function speakCurrent(event) {
+        if(event) event.stopPropagation();
+        if (currentCardIndex === -1) return;
+        let rawText = decks[currentDeck][currentCardIndex].back.replace(/\{\{(.*?)\}\}/g, '$1');
+        let utterance = new SpeechSynthesisUtterance(rawText);
+        utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance);
+    }
+
+    function checkTypedAnswer() {
+        if (currentCardIndex === -1) return;
+        const typed = document.getElementById('typeInput').value.trim().toLowerCase();
+        if (!typed) return;
+        
+        let rawAnswer = decks[currentDeck][currentCardIndex].back.replace(/\{\{(.*?)\}\}/g, '$1').trim().toLowerCase();
+        let isCorrect = typed === rawAnswer;
+        
+        let feedback = document.getElementById('typeFeedback');
+        feedback.style.display = 'block';
+        if (isCorrect) {
+            feedback.style.color = 'var(--success)';
+            feedback.innerText = "To'g'ri! 🎉";
+        } else {
+            feedback.style.color = 'var(--danger)';
+            feedback.innerText = `Xato! To'g'ri javob: ${rawAnswer}`;
+        }
+
+        setTimeout(() => {
+            document.getElementById('typeInput').value = '';
+            feedback.style.display = 'none';
+            processCard(isCorrect);
+        }, 1200);
+    }
+
+    function processCard(isCorrect) {
+        if (currentCardIndex === -1) return;
+        let card = decks[currentDeck][currentCardIndex];
+        
+        playSound(isCorrect ? 'correct' : 'wrong');
+
+        let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
+        history.push({ date: new Date().toLocaleDateString(), isCorrect, timestamp: Date.now() });
+        localStorage.setItem('leitner_history', JSON.stringify(history));
+
+        document.body.classList.add(isCorrect ? 'glow-success' : 'glow-danger');
+        setTimeout(() => document.body.classList.remove(isCorrect ? 'glow-success' : 'glow-danger'), 400);
+
+        if (isCorrect) { 
+            if (card.box < 5) {
+                card.box++; 
+                card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
+            } 
+        } else { 
+            card.box = 1; 
+            card.nextReview = Date.now();
+            card.fails = (card.fails || 0) + 1;
+        }
+
+        let cardEl = document.getElementById('activeCard');
+        if (cardEl.classList.contains('flipped')) {
+            cardEl.classList.remove('flipped');
+            setTimeout(saveAll, 400); 
+        } else { 
+            setTimeout(saveAll, 150); 
+        }
+    }
+
+    function toggleStats() {
+        let section = document.getElementById('statsSection');
+        if (section.style.display === 'block') section.style.display = 'none';
+        else { renderStats(); section.style.display = 'block'; }
+    }
+
+    function toggleBulk() {
+        let section = document.getElementById('bulkSection');
+        section.style.display = (section.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function processBulkImport() {
+        const text = document.getElementById('bulkInput').value.trim();
+        if (!text) return;
+        const lines = text.split('\n');
+        let count = 0;
+        lines.forEach(line => {
+            let parts = line.split(/[,;\-\t]/);
+            if (parts.length >= 2) {
+                let front = parts[0].trim();
+                let back = parts.slice(1).join(',').trim();
+                if (front && back) {
+                    decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, img: '', box: 1, nextReview: Date.now(), fails: 0 });
+                    count++;
+                }
+            }
+        });
+        document.getElementById('bulkInput').value = '';
+        toggleBulk(); saveAll();
+        alert(`${count} ta so'z qo'shildi!`);
+    }
+
+    function renderStats() {
+        let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
+        let total = history.length;
+        let correct = history.filter(h => h.isCorrect).length;
+        let accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statAccuracy').innerText = accuracy + '%';
+
+        let last7Days = {};
+        for (let i = 6; i >= 0; i--) {
+            let d = new Date(); d.setDate(d.getDate() - i);
+            last7Days[d.toLocaleDateString()] = 0;
+        }
+
+        history.forEach(h => {
+            if (last7Days[h.date] !== undefined) last7Days[h.date]++;
         });
 
-        function enableNotifications() {
-            if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        alert("Bildirishnomalar yoqildi!");
-                        checkAndNotify();
-                    }
-                });
-            }
-        }
+        let chartContainer = document.getElementById('statsChart');
+        chartContainer.innerHTML = '';
+        let maxVal = Math.max(...Object.values(last7Days), 1);
 
-        function checkAndNotify() {
-            let totalDue = 0;
-            Object.keys(decks).forEach(d => {
-                totalDue += decks[d].filter(c => c.box < 5 && c.nextReview <= Date.now()).length;
-            });
+        Object.keys(last7Days).forEach(date => {
+            let count = last7Days[date];
+            let height = Math.round((count / maxVal) * 80) + 5;
             
-            if (totalDue > 0 && Notification.permission === "granted") {
-                new Notification("Leitner Pro", {
-                    body: `Bugun takrorlashingiz kerak bo'lgan ${totalDue} ta so'z bor!`,
-                    icon: "🔥"
-                });
-            }
-        }
+            let barWrapper = document.createElement('div');
+            barWrapper.style.cssText = "display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;";
+            barWrapper.innerHTML = `
+                <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${count}</div>
+                <div style="width:100%; max-width:24px; background:var(--border-color); border-radius:6px; height:80px; display:flex; align-items:flex-end; overflow:hidden;">
+                    <div style="width:100%; height:${height}px; background:var(--primary); border-radius:6px;"></div>
+                </div>
+                <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px; width:100%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${date.split('.')[0] || date.split('/')[0]}</div>
+            `;
+            chartContainer.appendChild(barWrapper);
+        });
+    }
 
-        function updateStreak() {
-            let lastVisit = localStorage.getItem('leitner_last_date');
-            let streak = parseInt(localStorage.getItem('leitner_streak')) || 0;
-            let today = new Date().toDateString();
+    function updateUI() {
+        let select = document.getElementById('deckSelect'); select.innerHTML = '';
+        Object.keys(decks).forEach(d => {
+            let opt = document.createElement('option'); opt.value = d; opt.innerText = d;
+            if (d === currentDeck) opt.selected = true; select.appendChild(opt);
+        });
 
-            if (lastVisit !== today) {
-                let yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-                if (lastVisit === yesterday.toDateString()) streak++;
-                else if (!lastVisit) streak = 1;
-                else streak = 1; 
-                
-                localStorage.setItem('leitner_last_date', today);
-                localStorage.setItem('leitner_streak', streak);
-                checkAndNotify();
-            }
-            document.getElementById('streakDays').innerText = streak;
-        }
+        let cards = decks[currentDeck] || [];
+        let now = Date.now();
 
-        function saveAll() {
-            localStorage.setItem('leitner_decks', JSON.stringify(decks));
-            localStorage.setItem('leitner_current_deck', currentDeck);
-            updateUI();
-        }
-
-        function createDeck() {
-            let name = prompt("Yangi to'plam nomini kiriting:");
-            if (name && !decks[name]) { decks[name] = []; currentDeck = name; saveAll(); }
-        }
-
-        function changeDeck() { currentDeck = document.getElementById('deckSelect').value; saveAll(); }
-
-        function formatCloze(text, isBack = false) {
-            if (!text) return "";
-            return text.replace(/\{\{(.*?)\}\}/g, (match, p1) => {
-                return isBack 
-                    ? `<span style="color:var(--success); font-weight:bold; text-decoration:underline;">${p1}</span>`
-                    : `<span style="background:#e0e7ff; color:var(--primary); padding:2px 8px; border-radius:6px; font-weight:bold;">[...]</span>`;
-            });
-        }
-
-        function addOrUpdateCard() {
-            const front = document.getElementById('frontInput').value.trim();
-            const back = document.getElementById('backInput').value.trim();
-            const img = document.getElementById('imgInput').value.trim();
-
-            if (front && back) {
-                if (editingCardId) {
-                    let card = decks[currentDeck].find(c => c.id === editingCardId);
-                    if (card) { card.front = front; card.back = back; card.img = img; }
-                    editingCardId = null; document.getElementById('btnAdd').innerText = "Qo'shish";
-                } else {
-                    decks[currentDeck].push({ id: Date.now(), front, back, img, box: 1, nextReview: Date.now(), fails: 0 });
-                }
-                document.getElementById('frontInput').value = '';
-                document.getElementById('backInput').value = '';
-                document.getElementById('imgInput').value = '';
-                saveAll();
-            }
-        }
-
-        function editCard(id) {
-            let card = decks[currentDeck].find(c => c.id === id);
-            if (card) {
-                document.getElementById('frontInput').value = card.front;
-                document.getElementById('backInput').value = card.back;
-                document.getElementById('imgInput').value = card.img || '';
-                editingCardId = id; document.getElementById('btnAdd').innerText = "Saqlash";
-                document.getElementById('frontInput').focus();
-            }
-        }
-
-        function deleteCard(id) {
-            if(confirm("O'chirmoqchimisiz?")) {
-                decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id); saveAll();
-            }
-        }
-
-        function flipCard() {
-            if (currentCardIndex !== -1) document.getElementById('activeCard').classList.toggle('flipped');
-        }
-
-        function speakCurrent(event) {
-            event.stopPropagation();
-            if (currentCardIndex === -1) return;
-            let rawText = decks[currentDeck][currentCardIndex].back.replace(/\{\{(.*?)\}\}/g, '$1');
-            let utterance = new SpeechSynthesisUtterance(rawText);
-            utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance);
-        }
-
-        function processCard(isCorrect) {
-            if (currentCardIndex === -1) return;
-            let card = decks[currentDeck][currentCardIndex];
+        for (let i = 1; i <= 5; i++) {
+            let boxCards = cards.filter(c => c.box === i);
+            let dueCards = boxCards.filter(c => c.nextReview <= now && i < 5).length;
             
-            let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
-            history.push({ date: new Date().toLocaleDateString(), isCorrect, timestamp: Date.now() });
-            localStorage.setItem('leitner_history', JSON.stringify(history));
-
-            document.body.classList.add(isCorrect ? 'glow-success' : 'glow-danger');
-            setTimeout(() => document.body.classList.remove(isCorrect ? 'glow-success' : 'glow-danger'), 400);
-
-            if (isCorrect) { 
-                if (card.box < 5) {
-                    card.box++; 
-                    card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
-                } 
-            } else { 
-                card.box = 1; 
-                card.nextReview = Date.now();
-                card.fails = (card.fails || 0) + 1;
-            }
-
-            let cardEl = document.getElementById('activeCard');
-            if (cardEl.classList.contains('flipped')) {
-                cardEl.classList.remove('flipped');
-                setTimeout(saveAll, 400); 
-            } else { 
-                setTimeout(saveAll, 150); 
-            }
+            document.getElementById(`count-${i}`).innerText = boxCards.length;
+            let dueText = document.getElementById(`due-${i}`);
+            dueText.innerText = dueCards > 0 ? `+${dueCards} tayyor` : '';
         }
 
-        function toggleStats() {
-            let section = document.getElementById('statsSection');
-            if (section.style.display === 'block') {
-                section.style.display = 'none';
-            } else {
-                renderStats();
-                section.style.display = 'block';
-            }
+        if (cards.length > 0) {
+            let percent = Math.round((cards.filter(c => c.box === 5).length / cards.length) * 100);
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressText').innerText = percent + '%';
+        } else {
+            document.getElementById('progressBar').style.width = '0%'; document.getElementById('progressText').innerText = '0%';
         }
 
-        function renderStats() {
-            let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
-            let total = history.length;
-            let correct = history.filter(h => h.isCorrect).length;
-            let accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-
-            document.getElementById('statTotal').innerText = total;
-            document.getElementById('statAccuracy').innerText = accuracy + '%';
-
-            let last7Days = {};
-            for (let i = 6; i >= 0; i--) {
-                let d = new Date(); d.setDate(d.getDate() - i);
-                last7Days[d.toLocaleDateString()] = 0;
-            }
-
-            history.forEach(h => {
-                if (last7Days[h.date] !== undefined) last7Days[h.date]++;
-            });
-
-            let chartContainer = document.getElementById('statsChart');
-            chartContainer.innerHTML = '';
-            let maxVal = Math.max(...Object.values(last7Days), 1);
-
-            Object.keys(last7Days).forEach(date => {
-                let count = last7Days[date];
-                let height = Math.round((count / maxVal) * 80) + 5;
-                
-                let barWrapper = document.createElement('div');
-                // min-width: 0 flexbox'da o'ngga chiqib ketish xatosini oldini oladi
-                barWrapper.style.cssText = "display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;";
-                barWrapper.innerHTML = `
-                    <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${count}</div>
-                    <div style="width:100%; max-width:24px; background:#e2e8f0; border-radius:6px; height:80px; display:flex; align-items:flex-end; overflow:hidden;">
-                        <div style="width:100%; height:${height}px; background:var(--primary); border-radius:6px;"></div>
-                    </div>
-                    <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px; width:100%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${date.split('.')[0] || date.split('/')[0]}</div>
-                `;
-                chartContainer.appendChild(barWrapper);
-            });
-        }
-
-        function updateUI() {
-            let select = document.getElementById('deckSelect'); select.innerHTML = '';
-            Object.keys(decks).forEach(d => {
-                let opt = document.createElement('option'); opt.value = d; opt.innerText = d;
-                if (d === currentDeck) opt.selected = true; select.appendChild(opt);
-            });
-
-            let cards = decks[currentDeck] || [];
-            let now = Date.now();
-
-            for (let i = 1; i <= 5; i++) {
-                let boxCards = cards.filter(c => c.box === i);
-                let dueCards = boxCards.filter(c => c.nextReview <= now && i < 5).length;
-                
-                document.getElementById(`count-${i}`).innerText = boxCards.length;
-                let dueText = document.getElementById(`due-${i}`);
-                if (dueCards > 0) dueText.innerText = `+${dueCards} tayyor`;
-                else dueText.innerText = '';
-            }
-
-            if (cards.length > 0) {
-                let percent = Math.round((cards.filter(c => c.box === 5).length / cards.length) * 100);
-                document.getElementById('progressBar').style.width = percent + '%';
-                document.getElementById('progressText').innerText = percent + '%';
-            } else {
-                document.getElementById('progressBar').style.width = '0%'; document.getElementById('progressText').innerText = '0%';
-            }
-
-            let available = cards.filter(c => c.box < 5 && c.nextReview <= now);
+        let available = cards.filter(c => c.box < 5 && c.nextReview <= now);
+        
+        if (available.length > 0) {
+            document.getElementById('reviewBanner').style.display = 'block';
+            let randomCard = available[Math.floor(Math.random() * available.length)];
+            currentCardIndex = cards.findIndex(c => c.id === randomCard.id);
             
-            if (available.length > 0) {
-                document.getElementById('reviewBanner').style.display = 'block';
-                let randomCard = available[Math.floor(Math.random() * available.length)];
-                currentCardIndex = cards.findIndex(c => c.id === randomCard.id);
-                
-                document.getElementById('frontText').innerHTML = formatCloze(randomCard.front, false);
-                document.getElementById('cardBack').innerHTML = formatCloze(randomCard.back, true);
-                
-                let fImg = document.getElementById('frontImg');
-                let bImg = document.getElementById('backImg');
-                if (randomCard.img) {
-                    fImg.src = randomCard.img; fImg.style.display = 'block';
-                    bImg.src = randomCard.img; bImg.style.display = 'block';
-                } else {
-                    fImg.style.display = 'none'; bImg.style.display = 'none';
-                }
-
-                document.getElementById('leechBadgeFront').style.display = (randomCard.fails >= 3) ? 'block' : 'none';
-                document.getElementById('audioBtn').style.display = 'flex';
+            document.getElementById('frontText').innerHTML = formatCloze(randomCard.front, false);
+            document.getElementById('cardBack').innerHTML = formatCloze(randomCard.back, true);
+            
+            let fImg = document.getElementById('frontImg');
+            let bImg = document.getElementById('backImg');
+            if (randomCard.img) {
+                fImg.src = randomCard.img; fImg.style.display = 'block';
+                bImg.src = randomCard.img; bImg.style.display = 'block';
             } else {
-                document.getElementById('reviewBanner').style.display = 'none';
-                currentCardIndex = -1;
-                document.getElementById('frontText').innerText = "Hozircha hamma darslar tugadi! 🏖️";
-                document.getElementById('cardBack').innerText = "";
-                document.getElementById('frontImg').style.display = 'none';
-                document.getElementById('backImg').style.display = 'none';
-                document.getElementById('leechBadgeFront').style.display = 'none';
-                document.getElementById('audioBtn').style.display = 'none';
+                fImg.style.display = 'none'; bImg.style.display = 'none';
             }
 
-            let list = document.getElementById('cardList'); list.innerHTML = '';
-            cards.forEach(c => {
-                let dateStr = new Date(c.nextReview).toLocaleDateString();
-                let leechBadge = (c.fails >= 3) ? `<span style="color:#ef4444; font-size:0.7rem; font-weight:bold;"> [⚠️ Muammoli]</span>` : '';
-                let div = document.createElement('div'); div.className = 'card-item';
-                div.innerHTML = `
-                    <div><strong>${c.front}</strong> - ${c.back} ${leechBadge}<br>
-                    <span style="font-size:0.75rem; color:var(--primary);">(${c.box}-quti | Keyingi: ${dateStr})</span></div>
-                    <div class="card-item-actions">
-                        <button class="action-icon" onclick="editCard(${c.id})">✏️</button>
-                        <button class="action-icon" onclick="deleteCard(${c.id})">🗑️</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-
-            if (document.getElementById('statsSection').style.display === 'block') {
-                renderStats();
-            }
+            document.getElementById('leechBadgeFront').style.display = (randomCard.fails >= 3) ? 'block' : 'none';
+            document.getElementById('audioBtn').style.display = 'flex';
+        } else {
+            document.getElementById('reviewBanner').style.display = 'none';
+            currentCardIndex = -1;
+            document.getElementById('frontText').innerText = "Hozircha hamma darslar tugadi! 🏖️";
+            document.getElementById('cardBack').innerText = "";
+            document.getElementById('frontImg').style.display = 'none';
+            document.getElementById('backImg').style.display = 'none';
+            document.getElementById('leechBadgeFront').style.display = 'none';
+            document.getElementById('audioBtn').style.display = 'none';
         }
 
-        function exportData() {
-            let a = document.createElement('a');
-            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(decks));
-            a.download = "leitner_backup.json"; a.click();
-        }
-        function importData(event) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                try { decks = JSON.parse(e.target.result); currentDeck = Object.keys(decks)[0] || "Asosiy"; saveAll(); alert("Yuklandi!"); } 
-                catch (err) { alert("Xatolik!"); }
-            }; reader.readAsText(event.target.files[0]);
-        }
+        let list = document.getElementById('cardList'); list.innerHTML = '';
+        cards.forEach(c => {
+            let dateStr = new Date(c.nextReview).toLocaleDateString();
+            let leechBadge = (c.fails >= 3) ? `<span style="color:#ef4444; font-size:0.75rem; font-weight:bold;"> [⚠️ Muammoli]</span>` : '';
+            let div = document.createElement('div'); div.className = 'card-item';
+            div.innerHTML = `
+                <div><strong>${c.front}</strong> - ${c.back} ${leechBadge}<br>
+                <span style="font-size:0.75rem; color:var(--primary);">(${c.box}-quti | Keyingi: ${dateStr})</span></div>
+                <div class="card-item-actions">
+                    <button class="action-icon" onclick="editCard(${c.id})">✏️</button>
+                    <button class="action-icon" onclick="deleteCard(${c.id})">🗑️</button>
+                </div>
+            `;
+            list.appendChild(div);
+        });
 
-        updateStreak();
-        updateUI();
-    </script>
+        if (document.getElementById('statsSection').style.display === 'block') renderStats();
+    }
+
+    function exportData() {
+        let a = document.createElement('a');
+        a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(decks));
+        a.download = "leitner_backup.json"; a.click();
+    }
+    function importData(event) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try { decks = JSON.parse(e.target.result); currentDeck = Object.keys(decks)[0] || "Asosiy"; saveAll(); alert("Yuklandi!"); } 
+            catch (err) { alert("Xatolik!"); }
+        }; reader.readAsText(event.target.files[0]);
+    }
+
+    updateStreak();
+    updateUI();
+</script>
 </body>
 </html>
