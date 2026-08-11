@@ -62,14 +62,14 @@
             background-color: var(--success-bg) !important;
             border-color: var(--success) !important;
             opacity: 0;
-            transition: transform 0.4s ease, opacity 0.4s ease, background-color 0.4s ease;
+            transition: transform 0.4s ease, opacity 0.4s ease;
         }
         .card.slide-out-down {
             transform: translateY(120%) rotate(-15deg);
             background-color: var(--danger-bg) !important;
             border-color: var(--danger) !important;
             opacity: 0;
-            transition: transform 0.4s ease, opacity 0.4s ease, background-color 0.4s ease;
+            transition: transform 0.4s ease, opacity 0.4s ease;
         }
 
         .animated-section { animation: springIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
@@ -131,7 +131,7 @@
 
         .card-container { width: 100%; height: 280px; perspective: 1200px; }
         .card-float { width: 100%; height: 100%; animation: floatDynamics 6s ease-in-out infinite; transform-style: preserve-3d; }
-        .card {width: 100%;height: 100%;position: relative;transform-style: preserve-3d;transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);cursor: pointer;border-radius: 30px;will-change: transform;}
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; border-radius: 30px; will-change: transform; }
         .card.flipped { transform: rotateY(180deg); }
         
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; border-radius: 30px; background: var(--card-bg); font-size: 1.45rem; font-weight: 800; text-align: center; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); overflow: hidden; transition: var(--spring-transition); }
@@ -231,7 +231,7 @@
         <button class="btn-full btn-info" onclick="toggleSection('statsSection'); toggleSidebar();">📊 Statistika</button>
         <button class="btn-full btn-warning" onclick="toggleSection('settingsSection'); toggleSidebar();">⚙️ Quti Sozlamalari</button>
         <button class="btn-full btn-success" onclick="toggleSection('bulkSection'); toggleSidebar();">📋 Ommaviy Import</button>
-        <button class="btn-full btn-primary" onclick="enableNotifications()">🔔 Bildirishnomalar</button>
+        <button class="btn-full btn-primary" onclick="enableNotifications()">🔔 Eslatmalar</button>
         <button class="btn-full btn-secondary" id="soundBtn" onclick="toggleSound()">🔊 Ovoz: Yoqilgan</button>
         
         <button class="btn-full btn-wrong" onclick="clearAllData()">⚠️ Barcha ma'lumotlarni tozalash</button>
@@ -414,6 +414,7 @@
         Notification.requestPermission().then(permission => {
             if (permission === "granted") {
                 alert("Bildirishnomalar muvaffaqiyatli yoqildi! 🔔");
+                new Notification("Leitner Pro", { body: "Endi vaqti-vaqti bilan sizga eslatib turamiz!" });
             }
         });
     }
@@ -573,15 +574,6 @@
         document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan"; 
     }
 
-    function clearAllData() {
-        if (confirm("DIQQAT! Barcha to'plamlaringiz, o'rganilgan so'zlaringiz, XP va statistikangiz butunlay o'chib ketadi. Ishonchingiz komilmi?")) {
-            if (confirm("Oxirgi ogohlantirish: Haqiqatan ham hammasini tozalamoqchimisiz?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-    }
-
     window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
         if (e.code === 'Space') { e.preventDefault(); flipCard(); }
@@ -660,14 +652,20 @@
         } 
     }
     
+    // Barqaror ovoz berish funksiyasi
     function speakCurrent(event) { 
         if(event) event.stopPropagation(); 
         if (currentCardId === null) return; 
         let card = decks[currentDeck].find(c => c.id === currentCardId);
         if(!card) return;
-        let utterance = new SpeechSynthesisUtterance(card.back); 
-        utterance.lang = speechLang; 
-        window.speechSynthesis.speak(utterance); 
+        
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // oldingi ovozlarni to'xtatish
+            let utterance = new SpeechSynthesisUtterance(card.back); 
+            utterance.lang = speechLang; 
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance); 
+        }
     }
 
     function processCard(isCorrect) {
@@ -689,6 +687,9 @@
         localStorage.setItem('leitner_history', JSON.stringify(history));
 
         let cardEl = document.getElementById('activeCard');
+        
+        // BUG TУҒИЛДИ: Qayerda turganidan qat'iy nazar kartani old tomoniga o'tkazib keyin uchiramiz
+        cardEl.classList.remove('flipped');
         cardEl.classList.remove('slide-in-left');
         
         if (isCorrect) {
@@ -700,7 +701,7 @@
         currentCardId = null; 
 
         setTimeout(() => {
-            cardEl.classList.remove('slide-out-right', 'slide-out-down', 'flipped');
+            cardEl.classList.remove('slide-out-right', 'slide-out-down');
 
             if (isCorrect) { 
                 xpPoints += 10; 
