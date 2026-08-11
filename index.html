@@ -659,14 +659,14 @@
                 autoFlipTimer = null;
             }
 
-            // Agar karta orqa tomoniga o'girilgan bo'lsa, 1 sekunddan keyin oldiga qaytarish
+            // Agar karta orqa tomoniga o'girilgan bo'lsa, 0.7 sekunddan keyin oldiga qaytarish
             if (cardEl.classList.contains('flipped')) {
                 autoFlipTimer = setTimeout(() => {
                     if (cardEl.classList.contains('flipped') && !isProcessing) {
                         cardEl.classList.remove('flipped');
                         playSound('flip');
                     }
-                }, 1000);
+                }, 700);
             }
         } 
     }
