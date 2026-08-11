@@ -364,6 +364,7 @@
     let isProcessing = false; 
     let editingCardId = null;
     let modalMode = ''; 
+    let autoFlipTimer = null; // Avtomatik ortga o'girish uchun taymer
 
     Object.keys(decks).forEach(deckName => {
         decks[deckName].forEach(card => {
@@ -645,14 +646,31 @@
         } 
     }
 
+    // YANGILANGAN: Karta bosilganda orqaga o'giriladi va 1 sekunddan keyin avtomatik oldiga qaytadi
     function flipCard() { 
         if (currentCardId !== null && !isProcessing) { 
             playSound('flip'); 
-            document.getElementById('activeCard').classList.toggle('flipped'); 
+            let cardEl = document.getElementById('activeCard');
+            cardEl.classList.toggle('flipped'); 
+
+            // Avvalgi taymerni tozalash (agar takroriy bosilsa)
+            if (autoFlipTimer) {
+                clearTimeout(autoFlipTimer);
+                autoFlipTimer = null;
+            }
+
+            // Agar karta orqa tomoniga o'girilgan bo'lsa, 1 sekunddan keyin oldiga qaytarish
+            if (cardEl.classList.contains('flipped')) {
+                autoFlipTimer = setTimeout(() => {
+                    if (cardEl.classList.contains('flipped') && !isProcessing) {
+                        cardEl.classList.remove('flipped');
+                        playSound('flip');
+                    }
+                }, 1000);
+            }
         } 
     }
     
-    // Barqaror ovoz berish funksiyasi
     function speakCurrent(event) { 
         if(event) event.stopPropagation(); 
         if (currentCardId === null) return; 
@@ -660,7 +678,7 @@
         if(!card) return;
         
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // oldingi ovozlarni to'xtatish
+            window.speechSynthesis.cancel();
             let utterance = new SpeechSynthesisUtterance(card.back); 
             utterance.lang = speechLang; 
             utterance.rate = 1.0;
@@ -671,6 +689,12 @@
     function processCard(isCorrect) {
         if (isProcessing || currentCardId === null) return;
         isProcessing = true; 
+
+        // Tugma bosilganda avtomatik o'girish taymerini bekor qilish
+        if (autoFlipTimer) {
+            clearTimeout(autoFlipTimer);
+            autoFlipTimer = null;
+        }
 
         let cardList = decks[currentDeck];
         let card = cardList.find(c => c.id === currentCardId);
@@ -688,7 +712,6 @@
 
         let cardEl = document.getElementById('activeCard');
         
-        // BUG TУҒИЛДИ: Qayerda turganidan qat'iy nazar kartani old tomoniga o'tkazib keyin uchiramiz
         cardEl.classList.remove('flipped');
         cardEl.classList.remove('slide-in-left');
         
