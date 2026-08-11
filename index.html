@@ -6,7 +6,7 @@
     <title>Leitner Pro - Ultimate Flashcards</title>
     <style>
         :root {
-            --bg-color: #f8fafc;
+            --bg-color: #f4f6f9;
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --success: #10b981;
@@ -15,26 +15,14 @@
             --danger-bg: #fef2f2;
             --warning: #f59e0b;
             --card-bg: #ffffff;
-            --text-main: #0f172a;
+            --text-main: #1e293b;
             --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow-soft: 0 12px 30px -5px rgba(0, 0, 0, 0.06), 0 8px 12px -6px rgba(0, 0, 0, 0.02);
-            --shadow-hover: 0 22px 35px -5px rgba(0, 0, 0, 0.12), 0 12px 12px -5px rgba(0, 0, 0, 0.05);
-            --shadow-3d: 0 6px 0 #cbd5e1;
-            --shadow-3d-active: 0 2px 0 #cbd5e1;
+            --border-color: rgba(226, 232, 240, 0.8);
+            --shadow-soft: 0 20px 40px -15px rgba(99, 102, 241, 0.08), 0 10px 20px -10px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 30px 60px -12px rgba(99, 102, 241, 0.15), 0 18px 24px -10px rgba(0, 0, 0, 0.06);
+            --shadow-3d: 0 8px 0 #cbd5e1;
+            --shadow-3d-active: 0 3px 0 #cbd5e1;
             --spring-transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        body.dark-mode {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --shadow-soft: 0 12px 30px -5px rgba(0, 0, 0, 0.35);
-            --shadow-hover: 0 22px 35px -5px rgba(0, 0, 0, 0.45);
-            --shadow-3d: 0 6px 0 #020617;
-            --shadow-3d-active: 0 2px 0 #020617;
         }
 
         * {
@@ -56,9 +44,9 @@
             100% { opacity: 1; transform: translateY(0) scale(1); } 
         }
         @keyframes floatDynamics { 
-            0% { transform: translateY(0px) rotate(0deg); } 
-            50% { transform: translateY(-10px) rotate(0.6deg); } 
-            100% { transform: translateY(0px) rotate(0deg); } 
+            0% { transform: translateY(0px); } 
+            50% { transform: translateY(-8px); } 
+            100% { transform: translateY(0px); } 
         }
         @keyframes popPulse { 
             0% { transform: scale(0.85); opacity: 0; } 
@@ -71,100 +59,99 @@
         .header { display: flex; justify-content: space-between; align-items: center; width: 100%; animation: springIn 0.5s ease forwards; }
         .badges-container { display: flex; gap: 8px; }
 
-        .hamburger { width: 44px; height: 44px; background: var(--card-bg); border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); transition: var(--spring-transition); z-index: 1001; }
+        .hamburger { width: 48px; height: 48px; background: var(--card-bg); border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; cursor: pointer; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); transition: var(--spring-transition); z-index: 1001; }
         .hamburger:hover { transform: translateY(-4px) scale(1.05); box-shadow: var(--shadow-hover); }
         .hamburger:active { transform: translateY(4px) scale(0.95); box-shadow: var(--shadow-3d-active); }
-        .hamburger span { width: 20px; height: 2.5px; background-color: var(--text-main); border-radius: 3px; transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6); }
-        .hamburger.active span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+        .hamburger span { width: 22px; height: 2.5px; background-color: var(--text-main); border-radius: 3px; transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6); }
+        .hamburger.active span:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
         .hamburger.active span:nth-child(2) { opacity: 0; transform: translateX(-12px); }
-        .hamburger.active span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+        .hamburger.active span:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
 
-        .top-badge { background: var(--card-bg); padding: 8px 14px; border-radius: 16px; font-weight: 800; font-size: 0.9rem; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 6px; cursor: default; transition: var(--spring-transition); }
+        .top-badge { background: var(--card-bg); padding: 10px 16px; border-radius: 18px; font-weight: 800; font-size: 0.9rem; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 6px; cursor: default; transition: var(--spring-transition); }
         .top-badge:hover { transform: scale(1.08) translateY(-3px); box-shadow: var(--shadow-hover); }
         .xp-text { color: var(--warning); }
 
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
 
-        .sidebar { position: fixed; top: 0; left: 0; width: 330px; max-width: 85vw; height: 100vh; background: var(--card-bg); z-index: 1000; transform: translateX(-100%); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); padding: 80px 20px 30px 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; box-shadow: 15px 0 40px rgba(0,0,0,0.18); }
+        .sidebar { position: fixed; top: 0; left: 0; width: 330px; max-width: 85vw; height: 100vh; background: var(--card-bg); z-index: 1000; transform: translateX(-100%); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); padding: 80px 20px 30px 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; box-shadow: 20px 0 50px rgba(0,0,0,0.12); }
         .sidebar.active { transform: translateX(0); }
 
-        /* Modal oyna dizayni */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box { background: var(--card-bg); padding: 24px; border-radius: 22px; width: 90%; max-width: 380px; box-shadow: var(--shadow-hover); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 14px; transform: scale(0.8) translateY(20px); transition: var(--spring-transition); }
+        .modal-box { background: var(--card-bg); padding: 26px; border-radius: 26px; width: 90%; max-width: 380px; box-shadow: var(--shadow-hover); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 14px; transform: scale(0.8) translateY(20px); transition: var(--spring-transition); }
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0); }
 
-        select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-weight: 700; font-size: 0.9rem; outline: none; cursor: pointer; transition: var(--spring-transition); }
+        select { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-weight: 700; font-size: 0.9rem; outline: none; cursor: pointer; transition: var(--spring-transition); }
         select:hover { border-color: var(--primary); transform: translateY(-1px); }
 
-        .btn-full { width: 100%; padding: 14px; border-radius: 14px; border: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; text-align: center; box-shadow: var(--shadow-3d); color: #fff; transition: var(--spring-transition), filter 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-full { width: 100%; padding: 15px; border-radius: 16px; border: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; text-align: center; box-shadow: var(--shadow-3d); color: #fff; transition: var(--spring-transition), filter 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-full:hover { transform: translateY(-3px) scale(1.01); box-shadow: var(--shadow-hover); filter: brightness(1.08); }
         .btn-full:active { transform: translateY(4px) scale(0.97); box-shadow: var(--shadow-3d-active); }
 
-        .btn-primary { background: var(--primary); } .btn-info { background: #0284c7; } .btn-db { background: #059669; } .btn-warning { background: #d97706; } .btn-theme { background: #8b5cf6; } .btn-secondary { background: #475569; } .btn-success { background: #059669; } .btn-edit { background: #64748b; } .btn-delete { background: #ef4444; }
-        .btn-wrong { background: var(--danger-bg); color: var(--danger); box-shadow: 0 6px 0 #fca5a5; } .btn-wrong:active { box-shadow: 0 2px 0 #fca5a5; }
-        .btn-correct { background: var(--success-bg); color: var(--success); box-shadow: 0 6px 0 #6ee7b7; } .btn-correct:active { box-shadow: 0 2px 0 #6ee7b7; }
+        .btn-primary { background: var(--primary); } .btn-info { background: #0284c7; } .btn-db { background: #059669; } .btn-warning { background: #d97706; } .btn-secondary { background: #475569; } .btn-success { background: #059669; } .btn-edit { background: #64748b; } .btn-delete { background: #ef4444; }
+        .btn-wrong { background: var(--danger-bg); color: var(--danger); box-shadow: 0 8px 0 #fca5a5; } .btn-wrong:active { box-shadow: 0 2px 0 #fca5a5; }
+        .btn-correct { background: var(--success-bg); color: var(--success); box-shadow: 0 8px 0 #6ee7b7; } .btn-correct:active { box-shadow: 0 2px 0 #6ee7b7; }
 
         .progress-wrapper { width: 100%; }
-        .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
-        .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 12px; height: 12px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-        .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 8px; }
+        .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 14px; height: 14px; overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04); }
+        .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 14px; }
 
-        .input-section { background: var(--card-bg); padding: 18px; border-radius: 22px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; width: 100%; transition: var(--spring-transition); }
+        .input-section { background: var(--card-bg); padding: 22px; border-radius: 26px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 14px; width: 100%; transition: var(--spring-transition); }
         .input-section:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
 
-        .input-group { display: flex; gap: 8px; width: 100%; }
-        .btn-auto { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); font-weight: 700; padding: 0 16px; border-radius: 12px; cursor: pointer; transition: var(--spring-transition); display: flex; align-items: center; justify-content: center; white-space: nowrap; font-size: 0.85rem; box-shadow: 0 4px 0 var(--border-color); }
-        .btn-auto:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: 0 6px 0 rgba(99,102,241,0.2); }
+        .input-group { display: flex; gap: 10px; width: 100%; }
+        .btn-auto { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); font-weight: 700; padding: 0 18px; border-radius: 14px; cursor: pointer; transition: var(--spring-transition); display: flex; align-items: center; justify-content: center; white-space: nowrap; font-size: 0.85rem; box-shadow: 0 6px 0 var(--border-color); }
+        .btn-auto:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 0 rgba(99,102,241,0.2); }
         .btn-auto:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--border-color); }
 
-        input, textarea { width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-main); font-size: 0.95rem; outline: none; transition: var(--spring-transition); }
-        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18); transform: translateY(-2px); }
+        input, textarea { width: 100%; padding: 15px; border: 1px solid var(--border-color); border-radius: 14px; background: var(--bg-color); color: var(--text-main); font-size: 0.95rem; outline: none; transition: var(--spring-transition); }
+        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.15); transform: translateY(-2px); }
 
-        .review-banner { width: 100%; background: #fffbeb; border: 1px solid #fcd34d; color: #b45309; padding: 12px; border-radius: 14px; font-weight: 700; text-align: center; display: none; animation: popPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .review-banner { width: 100%; background: #fffbeb; border: 1px solid #fcd34d; color: #b45309; padding: 14px; border-radius: 16px; font-weight: 700; text-align: center; display: none; animation: popPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: var(--shadow-soft); }
 
-        .card-container { width: 100%; height: 260px; perspective: 1200px; }
-        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; border-radius: 26px; animation: floatDynamics 6s ease-in-out infinite; }
-        .card:hover { filter: brightness(1.02); }
+        .card-container { width: 100%; height: 280px; perspective: 1200px; }
+        .card-float { width: 100%; height: 100%; animation: floatDynamics 6s ease-in-out infinite; transform-style: preserve-3d; }
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; border-radius: 30px; }
         .card.flipped { transform: rotateY(180deg); }
         
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 26px; border-radius: 26px; background: var(--card-bg); font-size: 1.45rem; font-weight: 800; text-align: center; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); overflow: hidden; transition: var(--spring-transition); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; border-radius: 30px; background: var(--card-bg); font-size: 1.45rem; font-weight: 800; text-align: center; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); overflow: hidden; transition: var(--spring-transition); }
         .card-face:hover { box-shadow: var(--shadow-hover); }
         .card-back { transform: rotateY(180deg); color: var(--primary); }
 
-        .audio-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-3d); font-size: 1.2rem; transition: var(--spring-transition); }
+        .audio-btn { position: absolute; top: 18px; right: 18px; background: var(--bg-color); border: none; border-radius: 50%; width: 48px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-3d); font-size: 1.2rem; transition: var(--spring-transition); }
         .audio-btn:hover { transform: scale(1.15) translateY(-3px); box-shadow: var(--shadow-hover); }
         .audio-btn:active { transform: scale(0.92) translateY(2px); box-shadow: var(--shadow-3d-active); }
-        .leech-tag { position: absolute; top: 15px; left: 15px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; border: 1px solid #fca5a5; font-weight: 800; animation: popPulse 0.4s ease; }
-        .card-tags { position: absolute; bottom: 15px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
-        .tag-badge { font-size: 0.7rem; background: var(--bg-color); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-weight: 700; border: 1px solid var(--border-color); }
+        .leech-tag { position: absolute; top: 18px; left: 18px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 6px 12px; border-radius: 10px; border: 1px solid #fca5a5; font-weight: 800; animation: popPulse 0.4s ease; }
+        .card-tags { position: absolute; bottom: 18px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+        .tag-badge { font-size: 0.7rem; background: var(--bg-color); color: var(--text-muted); padding: 4px 12px; border-radius: 14px; font-weight: 700; border: 1px solid var(--border-color); }
 
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; }
 
-        .boxes-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; align-items: end; }
-        .box { background: var(--card-bg); border-radius: 18px; padding: 14px 6px; text-align: center; border: 1px solid var(--border-color); border-top: 5px solid var(--primary); box-shadow: var(--shadow-soft); cursor: pointer; transition: var(--spring-transition); }
+        .boxes-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; width: 100%; align-items: end; }
+        .box { background: var(--card-bg); border-radius: 20px; padding: 16px 8px; text-align: center; border: 1px solid var(--border-color); border-top: 6px solid var(--primary); box-shadow: var(--shadow-soft); cursor: pointer; transition: var(--spring-transition); }
         .box:hover { transform: translateY(-8px) scale(1.03); box-shadow: var(--shadow-hover); }
         .box:active { transform: translateY(2px); }
         .box:nth-child(1), .box:nth-child(2), .box:nth-child(3) { grid-column: span 2; }
         .box:nth-child(4), .box:nth-child(5) { grid-column: span 3; }
         .box h3 { font-size: 0.75rem; color: var(--text-muted); transition: color 0.3s ease; }
         .box:hover h3 { color: var(--primary); }
-        .box .count { font-size: 1.35rem; font-weight: 800; margin-top: 4px; }
+        .box .count { font-size: 1.4rem; font-weight: 800; margin-top: 6px; }
         .box .due { font-size: 0.7rem; color: var(--danger); font-weight: 700; margin-top: 2px; }
 
-        .main-section { width: 100%; background: var(--card-bg); border-radius: 22px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: none; animation: springIn 0.5s ease; }
+        .main-section { width: 100%; background: var(--card-bg); border-radius: 26px; padding: 24px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: none; animation: springIn 0.5s ease; }
         
-        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
-        .setting-row input { width: 80px; text-align: center; padding: 8px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color); }
+        .setting-row input { width: 90px; text-align: center; padding: 10px; }
 
-        .list-section { width: 100%; background: var(--card-bg); border-radius: 22px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); transition: var(--spring-transition); }
+        .list-section { width: 100%; background: var(--card-bg); border-radius: 26px; padding: 24px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); transition: var(--spring-transition); }
         .list-section:hover { box-shadow: var(--shadow-hover); }
-        .search-bar { margin-bottom: 12px; }
-        .card-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); border-radius: 12px; transition: var(--spring-transition); }
+        .search-bar { margin-bottom: 14px; }
+        .card-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-bottom: 1px solid var(--border-color); border-radius: 14px; transition: var(--spring-transition); }
         .card-item:hover { background: var(--bg-color); transform: translateX(6px); }
         .card-item-actions { display: flex; gap: 10px; }
-        .action-icon { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 4px; border-radius: 8px; transition: var(--spring-transition); }
+        .action-icon { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 6px; border-radius: 10px; transition: var(--spring-transition); }
         .action-icon:hover { transform: scale(1.2) rotate(8deg); background: var(--border-color); }
 
         .hotkey-info { font-size: 0.75rem; color: var(--text-muted); text-align: center; opacity: 0.85; }
@@ -188,14 +175,14 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <h2 style="font-size: 1.2rem; margin-bottom: 4px;">⚙️ Boshqaruv Menyu</h2>
+        <h2 style="font-size: 1.2rem; margin-bottom: 6px;">⚙️ Boshqaruv Menyu</h2>
         
         <select id="deckSelect" onchange="changeDeck()"></select>
         <button class="btn-full btn-primary" onclick="openModal('create')">+ Yangi To'plam</button>
         <button class="btn-full btn-edit" onclick="openModal('rename')">✏️ Nomini O'zgartirish</button>
         <button class="btn-full btn-delete" onclick="deleteDeck()">🗑️ To'plamni O'chirish</button>
         
-        <hr style="border:0; border-top:1px solid var(--border-color); margin: 6px 0;">
+        <hr style="border:0; border-top:1px solid var(--border-color); margin: 8px 0;">
 
         <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted);">🌐 Tarjimonni sozlash</div>
         <div style="display: flex; gap: 6px; align-items: center;">
@@ -213,22 +200,21 @@
             </select>
         </div>
 
-        <hr style="border:0; border-top:1px solid var(--border-color); margin: 6px 0;">
+        <hr style="border:0; border-top:1px solid var(--border-color); margin: 8px 0;">
 
         <button class="btn-full btn-db" onclick="toggleSection('dbSection'); toggleSidebar();">🗄️ Baza (<span id="dbCount">0</span>)</button>
         <button class="btn-full btn-info" onclick="toggleSection('statsSection'); toggleSidebar();">📊 Statistika</button>
-        <button class="btn-full btn-theme" onclick="toggleSection('settingsSection'); toggleSidebar();">⚙️ Quti Sozlamalari</button>
+        <button class="btn-full btn-warning" onclick="toggleSection('settingsSection'); toggleSidebar();">⚙️ Quti Sozlamalari</button>
         <button class="btn-full btn-success" onclick="toggleSection('bulkSection'); toggleSidebar();">📋 Ommaviy Import</button>
-        <button class="btn-full btn-warning" onclick="enableNotifications()">🔔 Bildirishnomalar</button>
+        <button class="btn-full btn-primary" onclick="enableNotifications()">🔔 Bildirishnomalar</button>
         <button class="btn-full btn-secondary" id="soundBtn" onclick="toggleSound()">🔊 Ovoz: Yoqilgan</button>
-        <button class="btn-full btn-theme" onclick="toggleDarkMode()">🌙 Tungi Rejim</button>
     </div>
 
     <div class="modal-overlay" id="customModal" onclick="closeModal(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
             <h3 id="modalTitle" style="font-size: 1.1rem;">Yangi To'plam</h3>
             <input type="text" id="modalInput" placeholder="Nomi...">
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 10px;">
                 <button class="btn-full btn-secondary" onclick="closeModal()">Bekor qilish</button>
                 <button class="btn-full btn-primary" id="modalSubmitBtn" onclick="submitModal()">Saqlash</button>
             </div>
@@ -255,14 +241,14 @@
 
     <div class="main-section" id="bulkSection">
         <h3 style="font-size:1.1rem; margin-bottom:4px;">📋 Ommaviy so'z qo'shish</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">Har bir qatorga: <b>Savol, Javob, #teg</b></p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Har bir qatorga: <b>Savol, Javob, #teg</b></p>
         <textarea id="bulkInput" rows="5" placeholder="olma, apple, #meva&#10;yugurmoq, run, #fe'l"></textarea>
-        <button class="btn-full btn-primary" style="margin-top: 10px;" onclick="processBulkImport()">Qo'shish</button>
+        <button class="btn-full btn-primary" style="margin-top: 12px;" onclick="processBulkImport()">Qo'shish</button>
     </div>
 
     <div class="main-section" id="settingsSection">
         <h2 style="font-size: 1.2rem; margin-bottom: 12px;">⚙️ Quti Oraliqlari (Kun)</h2>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">To'g'ri topilgan karta necha kundan so'ng qayta chiqishini sozlang (1-quti doim 0 kun):</p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">To'g'ri topilgan karta necha kundan so'ng qayta chiqishini sozlang (1-quti doim 0 kun):</p>
         <div class="setting-row"><span>2-Quti:</span> <input type="number" id="int2" min="1"></div>
         <div class="setting-row"><span>3-Quti:</span> <input type="number" id="int3" min="1"></div>
         <div class="setting-row"><span>4-Quti:</span> <input type="number" id="int4" min="1"></div>
@@ -277,25 +263,27 @@
 
     <div class="main-section" id="statsSection">
         <h2 style="font-size: 1.2rem; margin-bottom: 12px;">📊 Statistika</h2>
-        <div style="display:flex; justify-content:space-between; margin-bottom: 10px;">
-            <div style="text-align:center;"><div id="statTotal" style="font-size:1.5rem; font-weight:800; color:var(--primary);">0</div><div style="font-size:0.75rem; color:var(--text-muted);">Jami Takrorlash</div></div>
-            <div style="text-align:center;"><div id="statAccuracy" style="font-size:1.5rem; font-weight:800; color:var(--success);">0%</div><div style="font-size:0.75rem; color:var(--text-muted);">Aniqlik</div></div>
+        <div style="display:flex; justify-content:space-around; margin-bottom: 10px;">
+            <div style="text-align:center;"><div id="statTotal" style="font-size:1.6rem; font-weight:800; color:var(--primary);">0</div><div style="font-size:0.75rem; color:var(--text-muted);">Jami Takrorlash</div></div>
+            <div style="text-align:center;"><div id="statAccuracy" style="font-size:1.6rem; font-weight:800; color:var(--success);">0%</div><div style="font-size:0.75rem; color:var(--text-muted);">Aniqlik</div></div>
         </div>
     </div>
 
     <div id="reviewBanner" class="review-banner">Bugun takrorlashingiz kerak bo'lgan kartochkalar bor 📮</div>
 
     <div class="card-container animated-section">
-        <div class="card" id="activeCard" onclick="flipCard()">
-            <div class="card-face card-front">
-                <div id="leechBadgeFront" class="leech-tag" style="display:none;">⚠️ Eslab qolish qiyin!</div>
-                <div id="frontText">Bo'sh</div>
-                <div id="frontTags" class="card-tags"></div>
-            </div>
-            <div class="card-face card-back">
-                <button class="audio-btn" id="audioBtn" onclick="speakCurrent(event)">🔊</button>
-                <div id="cardBack">Javob</div>
-                <div id="backTags" class="card-tags"></div>
+        <div class="card-float">
+            <div class="card" id="activeCard" onclick="flipCard()">
+                <div class="card-face card-front">
+                    <div id="leechBadgeFront" class="leech-tag" style="display:none;">⚠️ Eslab qolish qiyin!</div>
+                    <div id="frontText">Bo'sh</div>
+                    <div id="frontTags" class="card-tags"></div>
+                </div>
+                <div class="card-face card-back">
+                    <button class="audio-btn" id="audioBtn" onclick="speakCurrent(event)">🔊</button>
+                    <div id="cardBack">Javob</div>
+                    <div id="backTags" class="card-tags"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -339,7 +327,7 @@
     
     let currentCardIndex = -1;
     let editingCardId = null;
-    let modalMode = ''; // 'create' yoki 'rename'
+    let modalMode = ''; 
 
     Object.keys(decks).forEach(deckName => {
         decks[deckName].forEach(card => {
@@ -348,8 +336,6 @@
             if (card.tags === undefined) card.tags = "";
         });
     });
-
-    if (localStorage.getItem('leitner_dark') === 'true') document.body.classList.add('dark-mode');
 
     function getNextUzbekistanMidnight() {
         const now = new Date();
@@ -388,7 +374,6 @@
         });
     }
 
-    // Istalgan tildan ingliz, rus va o'zbek tillariga tarjima qiluvchi yaxshilangan funksiya
     async function autoTranslate() {
         let front = document.getElementById('frontInput').value.trim();
         if(!front) return;
@@ -447,7 +432,6 @@
         document.getElementById('sidebarOverlay').classList.toggle('active');
     }
 
-    /* Animatsiyali Modal boshqaruvi */
     function openModal(mode) {
         modalMode = mode;
         const modal = document.getElementById('customModal');
@@ -505,11 +489,6 @@
                 closeModal();
             }
         }
-    }
-
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('leitner_dark', document.body.classList.contains('dark-mode'));
     }
 
     function toggleSection(sectionId) {
