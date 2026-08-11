@@ -70,6 +70,7 @@
             width: 100%;
         }
 
+        /* Animatsion Gamburger Tugmasi */
         .hamburger {
             width: 44px;
             height: 44px;
@@ -125,6 +126,7 @@
             transition: transform 0.2s ease;
         }
 
+        /* Sidebar Overlay */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -214,11 +216,13 @@
         .btn-edit { background: #64748b; }
         .btn-delete { background: #ef4444; }
 
+        /* Progress Bar */
         .progress-wrapper { width: 100%; }
         .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
         .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 12px; height: 12px; overflow: hidden; }
         .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
+        /* Input Section */
         .input-section {
             background: var(--card-bg);
             padding: 16px;
@@ -244,6 +248,7 @@
         }
         input:focus, textarea:focus { border-color: var(--primary); }
 
+        /* Review Banner */
         .review-banner {
             width: 100%;
             background: #fffbeb;
@@ -257,6 +262,7 @@
             animation: fadeIn 0.3s ease;
         }
 
+        /* 3D Card */
         .card-container { width: 100%; height: 230px; perspective: 1000px; }
         .card { 
             width: 100%; height: 100%; position: relative; transform-style: preserve-3d; 
@@ -277,12 +283,15 @@
         .card-img { max-height: 80px; max-width: 90%; margin-bottom: 10px; border-radius: 10px; object-fit: cover; }
         .leech-tag { position: absolute; top: 15px; left: 15px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 4px 8px; border-radius: 8px; border: 1px solid #fca5a5; font-weight: 800; }
 
+        /* Typing Section */
         .typing-section { display: flex; flex-direction: column; gap: 8px; width: 100%; }
 
+        /* Controls */
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
         .btn-wrong { background: var(--danger-bg); color: var(--danger); }
         .btn-correct { background: var(--success-bg); color: var(--success); }
 
+        /* Qutilar */
         .boxes-container {
             display: grid; 
             grid-template-columns: repeat(6, 1fr); 
@@ -311,6 +320,7 @@
         .box .count { font-size: 1.2rem; font-weight: 800; }
         .box .due { font-size: 0.7rem; color: var(--danger); font-weight: 700; margin-top: 2px; }
 
+        /* Analytics & DB Section */
         .stats-section, .db-section {
             width: 100%; 
             background: var(--card-bg); 
@@ -337,6 +347,7 @@
             width: 100%;
         }
 
+        /* Bulk Section */
         .bulk-section {
             display: none;
             background: var(--card-bg);
@@ -349,6 +360,7 @@
             animation: fadeIn 0.3s ease;
         }
 
+        /* Card List */
         .list-section { width: 100%; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
         .card-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .card-item-actions { display: flex; gap: 10px; }
@@ -457,7 +469,7 @@
 
     <div class="db-section" id="dbSection">
         <h2 style="font-size: 1.1rem; margin-bottom: 12px;">🗄️ O'zlashtirilgan Kartalar Bazasi</h2>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">5-qutidan muvaffaqiyatli o'tgan kartalaringiz shu yerda saqlanadi:</p>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">5-qutidan o'tgan barcha kartalaringiz shu bazada yig'iladi:</p>
         <div id="dbCardList"></div>
     </div>
 
@@ -500,13 +512,13 @@
 
     const boxIntervals = { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
 
-    // O'zbekiston vaqti (UTC+5) bo'yicha keyingi kungi 00:00:00 vaqtini hisoblash
+    // O'zbekiston vaqti (Asia/Tashkent UTC+5) bo'yicha kelasi kunning 00:00:00 vaqtini milisaniyalarda hisoblash
     function getNextUzbekistanMidnight() {
         const now = new Date();
         const uzString = now.toLocaleString("en-US", { timeZone: "Asia/Tashkent" });
         const uzDate = new Date(uzString);
         const nextMidnight = new Date(uzDate);
-        nextMidnight.setHours(24, 0, 0, 0); // ertangi 00:00:00
+        nextMidnight.setHours(24, 0, 0, 0); // Ertangi 00:00:00
         const diffMs = nextMidnight.getTime() - uzDate.getTime();
         return Date.now() + diffMs;
     }
@@ -592,12 +604,31 @@
     function checkAndNotify() {
         let totalDue = 0;
         Object.keys(decks).forEach(d => {
-            totalDue += decks[d].filter(c => c.box <= 5 && c.nextReview <= Date.now()).length;
+            totalDue += decks[d].filter(c => c.nextReview <= Date.now()).length;
         });
         if (totalDue > 0 && Notification.permission === "granted") {
-            new Notification("Leitner Pro", { body: `Bugun takrorlashingiz kerak bo'lgan ${totalDue} ta so'z bor!`, icon: "🔥" });
+            new Notification("Leitner Pro", { 
+                body: `Soat 00:00 bo'ldi! Bugun takrorlashingiz kerak bo'lgan ${totalDue} ta so'z bor!`, 
+                icon: "🔥" 
+            });
         }
     }
+
+    // Soat 00:00 kelganda avtomatik bildirishnoma yuborish va sahifani yangilash
+    function scheduleMidnightCheck() {
+        const msUntilMidnight = getNextUzbekistanMidnight() - Date.now();
+        setTimeout(() => {
+            checkAndNotify();
+            updateUI();
+            scheduleMidnightCheck(); // Kelasi kun uchun qayta sozlash
+        }, msUntilMidnight + 1000);
+    }
+    scheduleMidnightCheck();
+
+    // Har 1 minutda tekshirib turish
+    setInterval(() => {
+        updateUI();
+    }, 60000);
 
     function updateStreak() {
         let lastVisit = localStorage.getItem('leitner_last_date');
@@ -779,14 +810,14 @@
                 card.box++; 
                 card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
             } else {
-                // 5-qutidan muvaffaqiyatli o'tdi -> BAZAGA (MA'LUMOTLAR BAZASIGA) TUSHADI
+                // 5-qutidan muvaffaqiyatli o'tdi -> O'zlashtirilgan Ma'lumotlar Bazasiga o'tadi
                 if (!learnedDeck[currentDeck]) learnedDeck[currentDeck] = [];
                 card.completedAt = new Date().toLocaleDateString();
                 learnedDeck[currentDeck].push(card);
                 decks[currentDeck] = decks[currentDeck].filter(c => c.id !== card.id);
             }
         } else { 
-            // Xato topildi: 1-qutiga tushadi va O'zbekiston vaqti bilan tunda 00:00 dan keyin qayta ko'rsatiladi
+            // XATO: 1-qutiga tushadi va O'zbekiston vaqti bilan kelasi kun 00:00:00 gacha seansda qayta chiqmaydi
             card.box = 1; 
             card.nextReview = getNextUzbekistanMidnight();
             card.fails = (card.fails || 0) + 1;
@@ -857,7 +888,7 @@
             div.innerHTML = `
                 <div>
                     <strong>${c.front}</strong> - ${c.back}<br>
-                    <span style="font-size:0.75rem; color:var(--success);">✅ O'zlashtirilgan date: ${c.completedAt || 'Yaqinda'}</span>
+                    <span style="font-size:0.75rem; color:var(--success);">✅ O'zlashtirilgan sana: ${c.completedAt || 'Yaqinda'}</span>
                 </div>
             `;
             listContainer.appendChild(div);
