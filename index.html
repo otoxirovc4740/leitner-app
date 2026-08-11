@@ -266,4 +266,556 @@
     </div>
 
     <div class="main-section" id="bulkSection">
-        <h3 style="font-size:1.1rem; margin
+        <h3 style="font-size:1.1rem; margin-bottom:4px;">📋 Ommaviy so'z qo'shish</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Har bir qatorga: <b>Savol, Javob, #teg</b></p>
+        <textarea id="bulkInput" rows="5" placeholder="olma, apple, #meva&#10;yugurmoq, run, #fe'l"></textarea>
+        <button class="btn-full btn-primary" style="margin-top: 12px;" onclick="processBulkImport()">Qo'shish</button>
+    </div>
+
+    <div class="main-section" id="settingsSection">
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">⚙️ Quti Oraliqlari (Kun)</h2>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">To'g'ri topilgan karta necha kundan so'ng qayta chiqishini sozlang (1-quti doim 0 kun):</p>
+        <div class="setting-row"><span>2-Quti:</span> <input type="number" id="int2" min="1"></div>
+        <div class="setting-row"><span>3-Quti:</span> <input type="number" id="int3" min="1"></div>
+        <div class="setting-row"><span>4-Quti:</span> <input type="number" id="int4" min="1"></div>
+        <div class="setting-row" style="border:none;"><span>5-Quti:</span> <input type="number" id="int5" min="1"></div>
+        <button class="btn-full btn-primary" onclick="saveIntervals()">Saqlash</button>
+    </div>
+
+    <div class="main-section" id="dbSection">
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">🗄️ O'zlashtirilgan Baza</h2>
+        <div id="dbCardList"></div>
+    </div>
+
+    <div class="main-section" id="statsSection">
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">📊 Statistika</h2>
+        <div style="display:flex; justify-content:space-around; margin-bottom: 10px;">
+            <div style="text-align:center;"><div id="statTotal" style="font-size:1.6rem; font-weight:800; color:var(--primary);">0</div><div style="font-size:0.75rem; color:var(--text-muted);">Jami Takrorlash</div></div>
+            <div style="text-align:center;"><div id="statAccuracy" style="font-size:1.6rem; font-weight:800; color:var(--success);">0%</div><div style="font-size:0.75rem; color:var(--text-muted);">Aniqlik</div></div>
+        </div>
+    </div>
+
+    <div id="reviewBanner" class="review-banner">Bugun takrorlashingiz kerak bo'lgan kartochkalar bor 📮</div>
+
+    <div class="card-container animated-section">
+        <div class="card-float">
+            <div class="card" id="activeCard" onclick="flipCard()">
+                <div class="card-face card-front">
+                    <div id="leechBadgeFront" class="leech-tag" style="display:none;">⚠️ Eslab qolish qiyin!</div>
+                    <div id="frontText">Bo'sh</div>
+                    <div id="frontTags" class="card-tags"></div>
+                </div>
+                <div class="card-face card-back">
+                    <button class="audio-btn" id="audioBtn" onclick="speakCurrent(event)">🔊</button>
+                    <div id="cardBack">Javob</div>
+                    <div id="backTags" class="card-tags"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls animated-section">
+        <button class="btn-full btn-wrong" onclick="processCard(false)">✕ Xato</button>
+        <button class="btn-full btn-correct" onclick="processCard(true)">✓ To'g'ri</button>
+    </div>
+    <div class="hotkey-info animated-section">💡 [Space] O'girish | [←] Xato | [→] To'g'ri | [↑] Audio</div>
+
+    <div class="boxes-container animated-section">
+        <div class="box"><h3>1-Quti</h3><div class="count" id="count-1">0</div><div class="due" id="due-1"></div></div>
+        <div class="box"><h3>2-Quti</h3><div class="count" id="count-2">0</div><div class="due" id="due-2"></div></div>
+        <div class="box"><h3>3-Quti</h3><div class="count" id="count-3">0</div><div class="due" id="due-3"></div></div>
+        <div class="box"><h3>4-Quti</h3><div class="count" id="count-4">0</div><div class="due" id="due-4"></div></div>
+        <div class="box"><h3>5-Quti</h3><div class="count" id="count-5">0</div><div class="due" id="due-5"></div></div>
+    </div>
+
+    <div class="list-section animated-section">
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">To'plamdagi Kartalar</h2>
+        <input type="text" id="searchInput" class="search-bar" placeholder="🔍 So'z yoki #teg izlash..." onkeyup="filterCards()">
+        <div id="cardList"></div>
+    </div>
+
+    <div class="controls animated-section" style="margin-bottom: 40px;">
+        <button class="btn-full btn-secondary" onclick="exportData()">📁 Export</button>
+        <button class="btn-full btn-secondary" onclick="document.getElementById('importFile').click()">📥 Import</button>
+        <input type="file" id="importFile" style="display:none;" onchange="importData(event)" accept=".json">
+    </div>
+
+</div>
+
+<script>
+    let decks = JSON.parse(localStorage.getItem('leitner_decks')) || { "Asosiy": [] };
+    let learnedDeck = JSON.parse(localStorage.getItem('leitner_learned')) || {};
+    let currentDeck = localStorage.getItem('leitner_current_deck') || "Asosiy";
+    let soundEnabled = JSON.parse(localStorage.getItem('leitner_sound')) ?? true;
+    
+    let boxIntervals = JSON.parse(localStorage.getItem('leitner_intervals')) || { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
+    let xpPoints = parseInt(localStorage.getItem('leitner_xp')) || 0;
+    
+    let speechLang = localStorage.getItem('leitner_speech_lang') || 'ru-RU';
+    let sourceLangSetting = localStorage.getItem('leitner_src_lang') || 'auto';
+    let targetLangSetting = localStorage.getItem('leitner_tgt_lang') || 'uz';
+
+    document.getElementById('speechLang').value = speechLang;
+    document.getElementById('sourceLang').value = sourceLangSetting;
+    document.getElementById('targetLang').value = targetLangSetting;
+
+    let currentCardIndex = -1;
+    let editingCardId = null;
+    let modalMode = ''; 
+
+    Object.keys(decks).forEach(deckName => {
+        decks[deckName].forEach(card => {
+            if (!card.nextReview) card.nextReview = Date.now();
+            if (card.fails === undefined) card.fails = 0;
+            if (card.tags === undefined) card.tags = "";
+        });
+    });
+
+    function getNextUzbekistanMidnight() {
+        const now = new Date();
+        const uzString = now.toLocaleString("en-US", { timeZone: "Asia/Tashkent" });
+        const uzDate = new Date(uzString);
+        const nextMidnight = new Date(uzDate);
+        nextMidnight.setHours(24, 0, 0, 0);
+        return Date.now() + (nextMidnight.getTime() - uzDate.getTime());
+    }
+
+    function updateXPBadge() {
+        localStorage.setItem('leitner_xp', xpPoints);
+        document.getElementById('xpCount').innerText = `${xpPoints} XP`;
+        
+        let level = Math.floor(xpPoints / 150);
+        let title = "O'rganuvchi";
+        if (level >= 1 && level < 3) title = "Havaskor";
+        else if (level >= 3 && level < 6) title = "Talaba";
+        else if (level >= 6 && level < 10) title = "Pro";
+        else if (level >= 10) title = "Master";
+        
+        document.getElementById('levelBadge').innerHTML = `🎓 ${title} <span class="xp-text">${xpPoints} XP</span>`;
+    }
+
+    function saveLangSettings() {
+        sourceLangSetting = document.getElementById('sourceLang').value;
+        targetLangSetting = document.getElementById('targetLang').value;
+        localStorage.setItem('leitner_src_lang', sourceLangSetting);
+        localStorage.setItem('leitner_tgt_lang', targetLangSetting);
+    }
+
+    function saveSpeechLang() {
+        speechLang = document.getElementById('speechLang').value;
+        localStorage.setItem('leitner_speech_lang', speechLang);
+    }
+
+    function enableNotifications() {
+        if (!("Notification" in window)) {
+            alert("Bu brauzer bildirishnomalarni qo'llab-quvvatlamaydi.");
+            return;
+        }
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                alert("Bildirishnomalar muvaffaqiyatli yoqildi! 🔔");
+            } else {
+                alert("Bildirishnomalarga ruxsat berilmadi.");
+            }
+        });
+    }
+
+    async function autoTranslate() {
+        let front = document.getElementById('frontInput').value.trim();
+        if(!front) return;
+        
+        let src = document.getElementById('sourceLang').value;
+        let tgt = document.getElementById('targetLang').value;
+        let langPair = src === 'auto' ? `|${tgt}` : `${src}|${tgt}`;
+
+        let btn = document.querySelector('.btn-auto');
+        btn.innerText = "⏳...";
+        try {
+            let res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(front)}&langpair=${langPair}`);
+            let data = await res.json();
+            if(data && data.responseData && data.responseData.translatedText) {
+                let translated = data.responseData.translatedText.trim();
+                document.getElementById('backInput').value = translated;
+            } else {
+                alert("Tarjima topilmadi.");
+            }
+        } catch(e) {
+            console.error("Tarjimada xatolik", e);
+            alert("Tarjima qilishda xatolik yuz berdi. Internet aloqasini tekshiring.");
+        }
+        btn.innerText = "🌐 Tarjima";
+    }
+
+    function openSettings() {
+        document.getElementById('int2').value = boxIntervals[2];
+        document.getElementById('int3').value = boxIntervals[3];
+        document.getElementById('int4').value = boxIntervals[4];
+        document.getElementById('int5').value = boxIntervals[5];
+    }
+    
+    function saveIntervals() {
+        boxIntervals[2] = parseInt(document.getElementById('int2').value) || 3;
+        boxIntervals[3] = parseInt(document.getElementById('int3').value) || 5;
+        boxIntervals[4] = parseInt(document.getElementById('int4').value) || 7;
+        boxIntervals[5] = parseInt(document.getElementById('int5').value) || 15;
+        localStorage.setItem('leitner_intervals', JSON.stringify(boxIntervals));
+        toggleSection('settingsSection');
+        alert("Oraliqlar saqlandi!");
+    }
+
+    function filterCards() {
+        let query = document.getElementById('searchInput').value.toLowerCase();
+        let items = document.querySelectorAll('.card-list-item');
+        items.forEach(item => {
+            let text = item.innerText.toLowerCase();
+            item.style.display = text.includes(query) ? 'flex' : 'none';
+        });
+    }
+
+    function toggleSidebar() {
+        document.getElementById('hamburger').classList.toggle('active');
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    function openModal(mode) {
+        modalMode = mode;
+        const modal = document.getElementById('customModal');
+        const title = document.getElementById('modalTitle');
+        const input = document.getElementById('modalInput');
+        
+        if (mode === 'create') {
+            title.innerText = "➕ Yangi To'plam Qo'shish";
+            input.value = "";
+            input.placeholder = "To'plam nomi...";
+        } else if (mode === 'rename') {
+            title.innerText = "✏️ To'plam Nomini O'zgartirish";
+            input.value = currentDeck;
+            input.placeholder = "Yangi nom...";
+        }
+        
+        toggleSidebar();
+        modal.classList.add('active');
+        setTimeout(() => input.focus(), 100);
+    }
+
+    function closeModal() {
+        document.getElementById('customModal').classList.remove('active');
+    }
+
+    function submitModal() {
+        const val = document.getElementById('modalInput').value.trim();
+        if (!val) return;
+
+        if (modalMode === 'create') {
+            if (!decks[val]) {
+                decks[val] = [];
+                currentDeck = val;
+                saveAll();
+                closeModal();
+            } else {
+                alert("Bunday nomdagi to'plam allaqachon mavjud!");
+            }
+        } else if (modalMode === 'rename') {
+            if (val !== currentDeck) {
+                if (decks[val]) {
+                    alert("Bu nom band!");
+                    return;
+                }
+                decks[val] = decks[currentDeck];
+                if (learnedDeck[currentDeck]) {
+                    learnedDeck[val] = learnedDeck[currentDeck];
+                    delete learnedDeck[currentDeck];
+                }
+                delete decks[currentDeck];
+                currentDeck = val;
+                saveAll();
+                closeModal();
+            } else {
+                closeModal();
+            }
+        }
+    }
+
+    function toggleSection(sectionId) {
+        let sections = ['dbSection', 'statsSection', 'bulkSection', 'settingsSection'];
+        sections.forEach(id => {
+            if(id !== sectionId) document.getElementById(id).style.display = 'none';
+        });
+        let target = document.getElementById(sectionId);
+        if (target.style.display === 'block' || target.style.display === 'flex') {
+            target.style.display = 'none';
+        } else {
+            target.style.display = 'block';
+            if(sectionId === 'statsSection') renderStats();
+            if(sectionId === 'dbSection') renderDatabase();
+            if(sectionId === 'settingsSection') openSettings();
+        }
+    }
+
+    function playSound(type) {
+        if (!soundEnabled) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator(); const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination); const now = ctx.currentTime;
+            if (type === 'correct') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, now); osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'flip') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(300, now);
+                gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
+            }
+        } catch(e) {}
+    }
+
+    function toggleSound() { soundEnabled = !soundEnabled; localStorage.setItem('leitner_sound', JSON.stringify(soundEnabled)); document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan"; }
+
+    window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        if (e.code === 'Space') { e.preventDefault(); flipCard(); }
+        else if (e.code === 'ArrowLeft' || e.key === '1') { e.preventDefault(); processCard(false); }
+        else if (e.code === 'ArrowRight' || e.key === '2') { e.preventDefault(); processCard(true); }
+        else if (e.code === 'ArrowUp' || e.key === '3') { e.preventDefault(); speakCurrent(e); }
+    });
+
+    function saveAll() {
+        localStorage.setItem('leitner_decks', JSON.stringify(decks));
+        localStorage.setItem('leitner_learned', JSON.stringify(learnedDeck));
+        localStorage.setItem('leitner_current_deck', currentDeck);
+        updateUI();
+    }
+
+    function deleteDeck() { 
+        if (Object.keys(decks).length <= 1) { 
+            alert("Kamida 1 ta to'plam bo'lishi kerak!"); 
+            return; 
+        } 
+        if (confirm(`"${currentDeck}" to'plamini o'chirmoqchimisiz?`)) { 
+            delete decks[currentDeck]; 
+            delete learnedDeck[currentDeck]; 
+            currentDeck = Object.keys(decks)[0]; 
+            saveAll(); 
+            toggleSidebar(); 
+        } 
+    }
+
+    function changeDeck() { currentDeck = document.getElementById('deckSelect').value; saveAll(); }
+
+    function getFormattedTags(tagStr) {
+        if(!tagStr) return "";
+        return tagStr.split(',').map(t => `<span class="tag-badge">${t.trim().startsWith('#') ? t.trim() : '#' + t.trim()}</span>`).join('');
+    }
+
+    function addOrUpdateCard() {
+        const front = document.getElementById('frontInput').value.trim();
+        const back = document.getElementById('backInput').value.trim();
+        const tags = document.getElementById('tagInput').value.trim();
+
+        if (front && back) {
+            if (editingCardId) {
+                let card = decks[currentDeck].find(c => c.id === editingCardId);
+                if (card) { card.front = front; card.back = back; card.tags = tags; }
+                editingCardId = null; document.getElementById('btnAdd').innerText = "Karta Qo'shish";
+            } else {
+                decks[currentDeck].push({ id: Date.now(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 });
+            }
+            document.getElementById('frontInput').value = '';
+            document.getElementById('backInput').value = '';
+            document.getElementById('tagInput').value = '';
+            saveAll();
+        }
+    }
+
+    function editCard(id) {
+        let card = decks[currentDeck].find(c => c.id === id);
+        if (card) {
+            document.getElementById('frontInput').value = card.front;
+            document.getElementById('backInput').value = card.back;
+            document.getElementById('tagInput').value = card.tags || "";
+            editingCardId = id; document.getElementById('btnAdd').innerText = "Saqlash";
+            window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('frontInput').focus();
+        }
+    }
+    function deleteCard(id) { if(confirm("O'chirmoqchimisiz?")) { decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id); saveAll(); } }
+
+    function flipCard() { if (currentCardIndex !== -1) { playSound('flip'); document.getElementById('activeCard').classList.toggle('flipped'); } }
+    
+    function speakCurrent(event) { 
+        if(event) event.stopPropagation(); 
+        if (currentCardIndex === -1) return; 
+        let rawText = decks[currentDeck][currentCardIndex].back; 
+        let utterance = new SpeechSynthesisUtterance(rawText); 
+        utterance.lang = speechLang; 
+        window.speechSynthesis.speak(utterance); 
+    }
+
+    function processCard(isCorrect) {
+        if (currentCardIndex === -1) return;
+        let card = decks[currentDeck][currentCardIndex];
+        playSound(isCorrect ? 'correct' : 'wrong');
+
+        let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
+        history.push({ date: new Date().toLocaleDateString(), isCorrect, timestamp: Date.now() });
+        if (history.length > 500) history = history.slice(-500);
+        localStorage.setItem('leitner_history', JSON.stringify(history));
+
+        let cardEl = document.getElementById('activeCard');
+        cardEl.classList.remove('flipped');
+        
+        // Animatsiyani qo'shish (To'g'ri: o'ngga yashil, Xato: pastga qizil)
+        if (isCorrect) {
+            cardEl.classList.add('slide-out-right');
+        } else {
+            cardEl.classList.add('slide-out-down');
+        }
+
+        setTimeout(() => {
+            cardEl.classList.remove('slide-out-right', 'slide-out-down');
+
+            if (isCorrect) { 
+                xpPoints += 10; updateXPBadge();
+                if (card.box < 5) {
+                    card.box++; 
+                    card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
+                } else {
+                    if (!learnedDeck[currentDeck]) learnedDeck[currentDeck] = [];
+                    card.completedAt = new Date().toLocaleDateString(); learnedDeck[currentDeck].push(card);
+                    decks[currentDeck] = decks[currentDeck].filter(c => c.id !== card.id);
+                }
+            } else { 
+                card.box = 1; card.nextReview = getNextUzbekistanMidnight(); card.fails = (card.fails || 0) + 1;
+            }
+
+            saveAll();
+
+            // Keyingi karta chapdan uchib kelishi
+            cardEl.classList.add('slide-in-left');
+            setTimeout(() => {
+                cardEl.classList.remove('slide-in-left');
+            }, 450);
+        }, 350);
+    }
+
+    function processBulkImport() {
+        const text = document.getElementById('bulkInput').value.trim(); if (!text) return;
+        const lines = text.split('\n'); let count = 0;
+        lines.forEach(line => {
+            let parts = line.split(/[,;\t]/);
+            if (parts.length >= 2) {
+                let front = parts[0].trim(); let back = parts[1].trim(); let tags = parts[2] ? parts[2].trim() : "";
+                if (front && back) { decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 }); count++; }
+            }
+        });
+        document.getElementById('bulkInput').value = ''; toggleSection('bulkSection'); saveAll(); alert(`${count} ta so'z qo'shildi! 🎉`);
+    }
+
+    function renderDatabase() {
+        let listContainer = document.getElementById('dbCardList'); listContainer.innerHTML = '';
+        let items = learnedDeck[currentDeck] || [];
+        if (items.length === 0) { listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px;">Baza bo'sh.</div>`; return; }
+        items.forEach(c => { listContainer.innerHTML += `<div class="card-item"><div><strong>${c.front}</strong> - ${c.back}<br><span style="font-size:0.75rem; color:var(--success);">✅ ${c.completedAt || 'Yaqinda'}</span></div></div>`; });
+    }
+
+    function renderStats() {
+        let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
+        let total = history.length; let correct = history.filter(h => h.isCorrect).length;
+        document.getElementById('statTotal').innerText = total; document.getElementById('statAccuracy').innerText = (total > 0 ? Math.round((correct / total) * 100) : 0) + '%';
+    }
+
+    function exportData() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ decks, learnedDeck, boxIntervals, xpPoints }));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `${currentDeck}_leitner_backup.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function importData(event) {
+        const fileReader = new FileReader();
+        if (event.target.files[0]) {
+            fileReader.readAsText(event.target.files[0], "UTF-8");
+            fileReader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.decks) {
+                        decks = parsed.decks;
+                        learnedDeck = parsed.learnedDeck || {};
+                        if (parsed.boxIntervals) boxIntervals = parsed.boxIntervals;
+                        if (parsed.xpPoints) xpPoints = parsed.xpPoints;
+                        currentDeck = Object.keys(decks)[0] || "Asosiy";
+                        saveAll();
+                        alert("Ma'lumotlar muvaffaqiyatli import qilindi! 📥");
+                    }
+                } catch (err) {
+                    alert("Faylni o'qishda xatolik yuz berdi!");
+                }
+            };
+        }
+    }
+
+    function updateUI() {
+        updateXPBadge();
+        let select = document.getElementById('deckSelect'); select.innerHTML = '';
+        Object.keys(decks).forEach(d => { let opt = document.createElement('option'); opt.value = d; opt.innerText = d; if (d === currentDeck) opt.selected = true; select.appendChild(opt); });
+
+        let cards = decks[currentDeck] || []; let learnedCards = learnedDeck[currentDeck] || [];
+        document.getElementById('dbCount').innerText = learnedCards.length;
+        let now = Date.now();
+
+        for (let i = 1; i <= 5; i++) {
+            let boxCards = cards.filter(c => c.box === i); let dueCards = boxCards.filter(c => c.nextReview <= now).length;
+            document.getElementById(`count-${i}`).innerText = boxCards.length; document.getElementById(`due-${i}`).innerText = dueCards > 0 ? `+${dueCards} tayyor` : '';
+        }
+
+        let total = cards.length + learnedCards.length;
+        if (total > 0) {
+            let percent = Math.round((learnedCards.length / total) * 100);
+            document.getElementById('progressBar').style.width = percent + '%'; document.getElementById('progressText').innerText = percent + '%';
+        }
+
+        let available = cards.filter(c => c.nextReview <= now);
+        if (available.length > 0) {
+            document.getElementById('reviewBanner').style.display = 'block';
+            let randomCard = available[Math.floor(Math.random() * available.length)];
+            currentCardIndex = cards.findIndex(c => c.id === randomCard.id);
+            document.getElementById('frontText').innerText = randomCard.front;
+            document.getElementById('cardBack').innerText = randomCard.back;
+            document.getElementById('frontTags').innerHTML = getFormattedTags(randomCard.tags);
+            document.getElementById('backTags').innerHTML = getFormattedTags(randomCard.tags);
+            document.getElementById('leechBadgeFront').style.display = (randomCard.fails >= 3) ? 'block' : 'none';
+            document.getElementById('audioBtn').style.display = 'flex';
+        } else {
+            document.getElementById('reviewBanner').style.display = 'none'; currentCardIndex = -1;
+            document.getElementById('frontText').innerText = "Hozircha hamma darslar tugadi! 🏖️";
+            document.getElementById('cardBack').innerText = "";
+            document.getElementById('frontTags').innerHTML = ""; document.getElementById('backTags').innerHTML = "";
+            document.getElementById('leechBadgeFront').style.display = 'none'; document.getElementById('audioBtn').style.display = 'none';
+        }
+
+        let list = document.getElementById('cardList'); list.innerHTML = '';
+        cards.forEach(c => {
+            let tagHTML = c.tags ? `<div style="margin-top:4px;">${getFormattedTags(c.tags)}</div>` : '';
+            let div = document.createElement('div'); div.className = 'card-item card-list-item';
+            div.innerHTML = `
+                <div><strong style="font-size:1.05rem;">${c.front}</strong> - ${c.back}<br>
+                <span style="font-size:0.75rem; color:var(--primary); font-weight:600;">(${c.box}-quti | Keyingi: ${new Date(c.nextReview).toLocaleDateString()})</span>
+                ${tagHTML}</div>
+                <div class="card-item-actions"><button class="action-icon" onclick="editCard(${c.id})">✏️</button><button class="action-icon" onclick="deleteCard(${c.id})">🗑️</button></div>`;
+            list.appendChild(div);
+        });
+        filterCards();
+    }
+
+    updateUI();
+</script>
+</body>
+</html>
