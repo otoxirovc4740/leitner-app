@@ -13,12 +13,15 @@
             --success-bg: #ecfdf5;
             --danger: #ef4444;
             --danger-bg: #fef2f2;
+            --warning: #f59e0b;
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
             --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             --shadow-3d: 0 6px 0 #cbd5e1;
+            --shadow-3d-active: 0 2px 0 #cbd5e1;
         }
 
         body.dark-mode {
@@ -28,350 +31,135 @@
             --text-muted: #94a3b8;
             --border-color: #334155;
             --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
             --shadow-3d: 0 6px 0 #020617;
+            --shadow-3d-active: 0 2px 0 #020617;
         }
 
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            box-sizing: border-box; margin: 0; padding: 0;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.3s ease;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            transition: background-color 0.4s ease, color 0.4s ease;
-            overflow-x: hidden;
-        }
-
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; overflow-x: hidden; }
         body.glow-success { background-color: #e6f4ea; }
         body.glow-danger { background-color: #fce8e8; }
 
-        .app-container {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
+        .app-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 18px; }
 
-        /* Top Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
+        /* Animations */
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
+        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Animatsion Gamburger Tugmasi */
-        .hamburger {
-            width: 44px;
-            height: 44px;
-            background: var(--card-bg);
-            border-radius: 14px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            box-shadow: var(--shadow-3d);
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
-            z-index: 1001;
-        }
+        .animated-section { animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-        .hamburger:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 #cbd5e1;
-        }
+        /* Top Header & Badges */
+        .header { display: flex; justify-content: space-between; align-items: center; width: 100%; animation: slideInUp 0.4s ease forwards; }
+        .badges-container { display: flex; gap: 8px; }
 
-        .hamburger span {
-            width: 20px;
-            height: 2.5px;
-            background-color: var(--text-main);
-            border-radius: 3px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .hamburger { width: 44px; height: 44px; background: var(--card-bg); border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.3s ease; z-index: 1001; }
+        .hamburger:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+        .hamburger:active { transform: translateY(4px); box-shadow: var(--shadow-3d-active); }
+        .hamburger span { width: 20px; height: 2.5px; background-color: var(--text-main); border-radius: 3px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hamburger.active span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+        .hamburger.active span:nth-child(2) { opacity: 0; transform: translateX(-10px); }
+        .hamburger.active span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(7.5px) rotate(45deg);
-        }
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-            transform: translateX(-10px);
-        }
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-7.5px) rotate(-45deg);
-        }
-
-        .streak-badge {
-            background: var(--card-bg);
-            padding: 8px 16px;
-            border-radius: 16px;
-            font-weight: 800;
-            font-size: 1rem;
-            box-shadow: var(--shadow-3d);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: transform 0.2s ease;
-        }
+        .top-badge { background: var(--card-bg); padding: 8px 12px; border-radius: 16px; font-weight: 800; font-size: 0.9rem; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; cursor: default; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .top-badge:hover { transform: scale(1.05) translateY(-2px); box-shadow: var(--shadow-hover); }
+        .xp-text { color: var(--warning); }
 
         /* Sidebar Overlay */
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(8px);
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
 
-        .sidebar-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .sidebar { position: fixed; top: 0; left: 0; width: 320px; max-width: 82vw; height: 100vh; background: var(--card-bg); z-index: 1000; transform: translateX(-100%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); padding: 80px 20px 30px 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.12); }
+        .sidebar.active { transform: translateX(0); }
 
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 320px;
-            max-width: 82vw;
-            height: 100vh;
-            background: var(--card-bg);
-            z-index: 1000;
-            transform: translateX(-100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 80px 20px 30px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            overflow-y: auto;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.12);
-        }
+        select { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-weight: 700; font-size: 0.95rem; outline: none; cursor: pointer; }
+        select:hover { border-color: var(--primary); }
 
-        .sidebar.active {
-            transform: translateX(0);
-        }
+        .btn-full { width: 100%; padding: 14px; border-radius: 14px; border: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; text-align: center; box-shadow: var(--shadow-3d); color: #fff; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-full:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); filter: brightness(1.05); }
+        .btn-full:active { transform: translateY(4px) scale(0.98); box-shadow: var(--shadow-3d-active); }
 
-        select {
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 0.95rem;
-            outline: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-full {
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            border: none;
-            font-weight: 800;
-            font-size: 0.95rem;
-            cursor: pointer;
-            text-align: center;
-            box-shadow: var(--shadow-3d);
-            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, filter 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: #fff;
-        }
-
-        .btn-full:active {
-            transform: translateY(3px) scale(0.98);
-            box-shadow: 0 2px 0 #cbd5e1;
-        }
-
-        .btn-primary { background: var(--primary); }
-        .btn-info { background: #0284c7; }
-        .btn-db { background: #059669; }
-        .btn-warning { background: #d97706; }
-        .btn-theme { background: #8b5cf6; }
-        .btn-secondary { background: #475569; }
-        .btn-success { background: #059669; }
-        .btn-edit { background: #64748b; }
-        .btn-delete { background: #ef4444; }
+        .btn-primary { background: var(--primary); } .btn-info { background: #0284c7; } .btn-db { background: #059669; } .btn-warning { background: #d97706; } .btn-theme { background: #8b5cf6; } .btn-secondary { background: #475569; } .btn-success { background: #059669; } .btn-edit { background: #64748b; } .btn-delete { background: #ef4444; }
+        .btn-wrong { background: var(--danger-bg); color: var(--danger); box-shadow: 0 6px 0 #fca5a5; } .btn-wrong:active { box-shadow: 0 2px 0 #fca5a5; }
+        .btn-correct { background: var(--success-bg); color: var(--success); box-shadow: 0 6px 0 #6ee7b7; } .btn-correct:active { box-shadow: 0 2px 0 #6ee7b7; }
 
         /* Progress Bar */
         .progress-wrapper { width: 100%; }
         .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
         .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 12px; height: 12px; overflow: hidden; }
-        .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         /* Input Section */
-        .input-section {
-            background: var(--card-bg);
-            padding: 16px;
-            border-radius: 20px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-        }
+        .input-section { background: var(--card-bg); padding: 16px; border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .input-section:hover { box-shadow: var(--shadow-hover); }
+        
+        .input-group { display: flex; gap: 8px; width: 100%; }
+        .btn-auto { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); font-weight: 700; padding: 0 16px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
+        .btn-auto:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-auto:active { transform: scale(0.95); }
 
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            background: var(--bg-color);
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s ease;
-        }
-        input:focus, textarea:focus { border-color: var(--primary); }
+        input, textarea { width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.3s ease; }
+        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); transform: translateY(-1px); }
 
         /* Review Banner */
-        .review-banner {
-            width: 100%;
-            background: #fffbeb;
-            border: 1px solid #fcd34d;
-            color: #b45309;
-            padding: 12px;
-            border-radius: 14px;
-            font-weight: 700;
-            text-align: center;
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
+        .review-banner { width: 100%; background: #fffbeb; border: 1px solid #fcd34d; color: #b45309; padding: 12px; border-radius: 14px; font-weight: 700; text-align: center; display: none; animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         /* 3D Card */
-        .card-container { width: 100%; height: 230px; perspective: 1000px; }
-        .card { 
-            width: 100%; height: 100%; position: relative; transform-style: preserve-3d; 
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            cursor: pointer; border-radius: 24px; 
-        }
+        .card-container { width: 100%; height: 250px; perspective: 1000px; }
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; border-radius: 24px; animation: float 5s ease-in-out infinite; }
+        .card:hover { filter: brightness(0.98); }
         .card.flipped { transform: rotateY(180deg); }
-        .card-face {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 24px; border-radius: 24px; background: var(--card-bg); font-size: 1.3rem; font-weight: 700; text-align: center;
-            box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); overflow: hidden;
-        }
-        .audio-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-3d); font-size: 1.1rem; }
-        .audio-btn:active { transform: translateY(2px); }
+        
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; border-radius: 24px; background: var(--card-bg); font-size: 1.4rem; font-weight: 800; text-align: center; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); overflow: hidden; }
         .card-back { transform: rotateY(180deg); color: var(--primary); }
 
-        .card-img { max-height: 80px; max-width: 90%; margin-bottom: 10px; border-radius: 10px; object-fit: cover; }
-        .leech-tag { position: absolute; top: 15px; left: 15px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 4px 8px; border-radius: 8px; border: 1px solid #fca5a5; font-weight: 800; }
+        .audio-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-3d); font-size: 1.2rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .audio-btn:hover { transform: scale(1.1) translateY(-2px); box-shadow: var(--shadow-hover); }
+        .audio-btn:active { transform: scale(0.95) translateY(2px); box-shadow: var(--shadow-3d-active); }
+        .leech-tag { position: absolute; top: 15px; left: 15px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; border: 1px solid #fca5a5; font-weight: 800; animation: popIn 0.3s ease; }
+        .card-tags { position: absolute; bottom: 15px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+        .tag-badge { font-size: 0.7rem; background: var(--bg-color); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-weight: 700; border: 1px solid var(--border-color); }
 
-        /* Typing Section */
+        /* Typing & Controls */
         .typing-section { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-
-        /* Controls */
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        .btn-wrong { background: var(--danger-bg); color: var(--danger); }
-        .btn-correct { background: var(--success-bg); color: var(--success); }
 
-        /* Qutilar */
-        .boxes-container {
-            display: grid; 
-            grid-template-columns: repeat(6, 1fr); 
-            gap: 10px;
-            width: 100%; 
-            align-items: end;
-        }
-        
-        .box {
-            background: var(--card-bg); 
-            border-radius: 16px; 
-            padding: 12px 6px; 
-            text-align: center;
-            border: 1px solid var(--border-color); 
-            border-top: 4px solid var(--primary);
-            box-shadow: var(--shadow-soft);
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .box:active { transform: translateY(3px); }
+        /* Qutilar (Boxes) */
+        .boxes-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; align-items: end; }
+        .box { background: var(--card-bg); border-radius: 16px; padding: 14px 6px; text-align: center; border: 1px solid var(--border-color); border-top: 4px solid var(--primary); box-shadow: var(--shadow-soft); cursor: pointer; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; }
+        .box:hover { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-hover); }
+        .box:active { transform: translateY(2px); }
         .box:nth-child(1), .box:nth-child(2), .box:nth-child(3) { grid-column: span 2; }
         .box:nth-child(4), .box:nth-child(5) { grid-column: span 3; }
-
-        .box h3 { font-size: 0.75rem; color: var(--text-muted); }
-        .box .count { font-size: 1.2rem; font-weight: 800; }
+        .box h3 { font-size: 0.75rem; color: var(--text-muted); transition: color 0.3s ease; }
+        .box:hover h3 { color: var(--primary); }
+        .box .count { font-size: 1.3rem; font-weight: 800; margin-top: 4px; }
         .box .due { font-size: 0.7rem; color: var(--danger); font-weight: 700; margin-top: 2px; }
 
-        /* Analytics & DB Section */
-        .stats-section, .db-section {
-            width: 100%; 
-            background: var(--card-bg); 
-            border-radius: 20px;
-            padding: 20px; 
-            box-shadow: var(--shadow-soft); 
-            border: 1px solid var(--border-color);
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .stat-card { background: var(--bg-color); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); }
-        .stat-card .num { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
-        .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
+        /* Main Sections (Stats, DB, Bulk, Settings) */
+        .main-section { width: 100%; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: none; animation: slideInUp 0.4s ease; }
         
-        .chart-container { 
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: space-between;
-            gap: 6px; 
-            height: 120px; 
-            padding-top: 20px; 
-            border-top: 1px dashed var(--border-color); 
-            width: 100%;
-        }
-
-        /* Bulk Section */
-        .bulk-section {
-            display: none;
-            background: var(--card-bg);
-            padding: 16px;
-            border-radius: 20px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-color);
-            flex-direction: column;
-            gap: 10px;
-            animation: fadeIn 0.3s ease;
-        }
+        /* Setting Inputs */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        .setting-row input { width: 80px; text-align: center; padding: 8px; }
 
         /* Card List */
         .list-section { width: 100%; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
-        .card-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .search-bar { margin-bottom: 12px; }
+        .card-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); border-radius: 12px; transition: background 0.2s ease, transform 0.2s ease; }
+        .card-item:hover { background: var(--bg-color); transform: translateX(4px); }
         .card-item-actions { display: flex; gap: 10px; }
-        .action-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+        .action-icon { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 4px; border-radius: 8px; transition: transform 0.2s ease, background 0.2s ease; }
+        .action-icon:hover { transform: scale(1.15) rotate(5deg); background: var(--border-color); }
 
-        .hotkey-info { font-size: 0.75rem; color: var(--text-muted); text-align: center; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .hotkey-info { font-size: 0.75rem; color: var(--text-muted); text-align: center; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -384,30 +172,33 @@
             <span></span>
             <span></span>
         </div>
-        <h1 style="font-size: 1.4rem;">Leitner Pro</h1>
-        <div class="streak-badge">🔥 <span id="streakDays">0</span> kun</div>
+        <div class="badges-container">
+            <div class="top-badge" id="levelBadge" title="Tajriba va Daraja">🎓 O'rganuvchi <span class="xp-text" id="xpCount">0 XP</span></div>
+            <div class="top-badge">🔥 <span id="streakDays">0</span> </div>
+        </div>
     </div>
 
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <h2 style="font-size: 1.1rem; margin-bottom: 6px;">⚙️ Boshqaruv Menyu</h2>
+        <h2 style="font-size: 1.2rem; margin-bottom: 8px;">⚙️ Boshqaruv Menyu</h2>
         
         <select id="deckSelect" onchange="changeDeck()"></select>
-        <button class="btn-full btn-primary" onclick="createDeck()">+ Yangi To'plam Yaratish</button>
-        <button class="btn-full btn-edit" onclick="renameDeck()">✏️ To'plam Nomini O'zgartirish</button>
+        <button class="btn-full btn-primary" onclick="createDeck()">+ Yangi To'plam</button>
+        <button class="btn-full btn-edit" onclick="renameDeck()">✏️ Nomini O'zgartirish</button>
         <button class="btn-full btn-delete" onclick="deleteDeck()">🗑️ To'plamni O'chirish</button>
         
-        <hr style="border:0; border-top:1px solid var(--border-color); margin: 6px 0;">
+        <hr style="border:0; border-top:1px solid var(--border-color); margin: 8px 0;">
 
-        <button class="btn-full btn-db" onclick="toggleDatabase(); toggleSidebar();">🗄️ Baza (<span id="dbCount">0</span> ta karta)</button>
-        <button class="btn-full btn-info" onclick="toggleStats(); toggleSidebar();">📊 Statistika</button>
+        <button class="btn-full btn-db" onclick="toggleSection('dbSection'); toggleSidebar();">🗄️ Baza (<span id="dbCount">0</span>)</button>
+        <button class="btn-full btn-info" onclick="toggleSection('statsSection'); toggleSidebar();">📊 Statistika</button>
+        <button class="btn-full btn-theme" onclick="toggleSection('settingsSection'); toggleSidebar();">⚙️ Quti Sozlamalari</button>
+        <button class="btn-full btn-success" onclick="toggleSection('bulkSection'); toggleSidebar();">📋 Ommaviy Import</button>
         <button class="btn-full btn-warning" onclick="enableNotifications()">🔔 Bildirishnomalar</button>
-        <button class="btn-full btn-theme" onclick="toggleDarkMode()">🌙 Tungi Rejim</button>
         <button class="btn-full btn-secondary" id="soundBtn" onclick="toggleSound()">🔊 Ovoz: Yoqilgan</button>
-        <button class="btn-full btn-success" onclick="toggleBulk(); toggleSidebar();">📋 Ommaviy Lugʻat Import</button>
+        <button class="btn-full btn-theme" onclick="toggleDarkMode()">🌙 Tungi Rejim</button>
     </div>
 
-    <div class="progress-wrapper">
+    <div class="progress-wrapper animated-section">
         <div class="progress-info">
             <span>O'zlashtirish darajasi</span>
             <span id="progressText">0%</span>
@@ -415,51 +206,75 @@
         <div class="progress-bar-bg"><div id="progressBar" class="progress-bar-fill"></div></div>
     </div>
 
-    <div class="input-section">
-        <input type="text" id="frontInput" placeholder="Savol 🔒">
-        <input type="text" id="backInput" placeholder="Javob 🔐">
-        <input type="text" id="imgInput" placeholder="Rasm URL havolasi (Ixtiyoriy)">
-        <button class="btn-full btn-primary" id="btnAdd" onclick="addOrUpdateCard()">Qo'shish</button>
+    <div class="input-section animated-section">
+        <div class="input-group">
+            <input type="text" id="frontInput" placeholder="Savol / Inglizcha so'z 🔒">
+            <button class="btn-auto" onclick="autoTranslate()" title="Avto Tarjima">🌐 Avto</button>
+        </div>
+        <input type="text" id="backInput" placeholder="Javob / Tarjimasi 🔐">
+        <input type="text" id="tagInput" placeholder="Teglar (masalan: #IELTS, #Fe'l)">
+        <button class="btn-full btn-primary" id="btnAdd" onclick="addOrUpdateCard()">Karta Qo'shish</button>
     </div>
 
-    <div class="bulk-section" id="bulkSection">
-        <h3 style="font-size:1rem;">📋 Ommaviy so'z qo'shish</h3>
-        <p style="font-size:0.8rem; color:var(--text-muted);">Har bir qatorga: <b>So'z, Tarjima</b> ko'rinishida yozing:</p>
-        <textarea id="bulkInput" rows="5" placeholder="olma, apple&#10;kartoshka, potato&#10;mushuk, cat"></textarea>
-        <button class="btn-full btn-primary" onclick="processBulkImport()">Saqlash va Qo'shish</button>
+    <div class="main-section" id="bulkSection">
+        <h3 style="font-size:1.1rem; margin-bottom:4px;">📋 Ommaviy so'z qo'shish</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">Har bir qatorga: <b>So'z, Tarjima, #teg</b></p>
+        <textarea id="bulkInput" rows="5" placeholder="apple, olma, #meva&#10;run, yugurmoq, #fe'l"></textarea>
+        <button class="btn-full btn-primary" style="margin-top: 10px;" onclick="processBulkImport()">Qo'shish</button>
     </div>
 
-    <div id="reviewBanner" class="review-banner">
-        Bugun takrorlashingiz kerak bo'lgan kartochkalar bor 📮
+    <div class="main-section" id="settingsSection">
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">⚙️ Quti Oraliqlari (Kun)</h2>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">To'g'ri topilgan karta necha kundan so'ng qayta chiqishini sozlang (1-quti doim 0 kun):</p>
+        <div class="setting-row"><span>2-Quti:</span> <input type="number" id="int2" min="1"></div>
+        <div class="setting-row"><span>3-Quti:</span> <input type="number" id="int3" min="1"></div>
+        <div class="setting-row"><span>4-Quti:</span> <input type="number" id="int4" min="1"></div>
+        <div class="setting-row" style="border:none;"><span>5-Quti:</span> <input type="number" id="int5" min="1"></div>
+        <button class="btn-full btn-primary" onclick="saveIntervals()">Saqlash</button>
     </div>
 
-    <div class="card-container">
+    <div class="main-section" id="dbSection">
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">🗄️ O'zlashtirilgan Baza</h2>
+        <div id="dbCardList"></div>
+    </div>
+
+    <div class="main-section" id="statsSection">
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">📊 Statistika</h2>
+        <div style="display:flex; justify-content:space-between; margin-bottom: 10px;">
+            <div style="text-align:center;"><div id="statTotal" style="font-size:1.5rem; font-weight:800; color:var(--primary);">0</div><div style="font-size:0.75rem; color:var(--text-muted);">Jami Takrorlash</div></div>
+            <div style="text-align:center;"><div id="statAccuracy" style="font-size:1.5rem; font-weight:800; color:var(--success);">0%</div><div style="font-size:0.75rem; color:var(--text-muted);">Aniqlik</div></div>
+        </div>
+    </div>
+
+    <div id="reviewBanner" class="review-banner">Bugun takrorlashingiz kerak bo'lgan kartochkalar bor 📮</div>
+
+    <div class="card-container animated-section">
         <div class="card" id="activeCard" onclick="flipCard()">
             <div class="card-face card-front">
-                <div id="leechBadgeFront" class="leech-tag" style="display:none;">⚠️ Eslab qolishda qiynalgansiz!</div>
-                <img id="frontImg" class="card-img" style="display:none;" alt="Visual">
+                <div id="leechBadgeFront" class="leech-tag" style="display:none;">⚠️ Eslab qolish qiyin!</div>
                 <div id="frontText">Bo'sh</div>
+                <div id="frontTags" class="card-tags"></div>
             </div>
             <div class="card-face card-back">
                 <button class="audio-btn" id="audioBtn" onclick="speakCurrent(event)">🔊</button>
-                <img id="backImg" class="card-img" style="display:none;" alt="Visual">
                 <div id="cardBack">Javob</div>
+                <div id="backTags" class="card-tags"></div>
             </div>
         </div>
     </div>
 
-    <div class="typing-section">
+    <div class="typing-section animated-section">
         <input type="text" id="typeInput" placeholder="Javobni yozib tekshirish (Enter)..." onkeydown="if(event.key==='Enter') checkTypedAnswer()">
-        <div id="typeFeedback" style="font-size:0.85rem; font-weight:700; text-align:center; display:none;"></div>
+        <div id="typeFeedback" style="font-size:0.85rem; font-weight:700; text-align:center; display:none; padding:8px; border-radius:8px; margin-top:4px;"></div>
     </div>
 
-    <div class="controls">
+    <div class="controls animated-section">
         <button class="btn-full btn-wrong" onclick="processCard(false)">✕ Xato</button>
         <button class="btn-full btn-correct" onclick="processCard(true)">✓ To'g'ri</button>
     </div>
-    <div class="hotkey-info">💡 Klaviatura: [Space] Flip | [←] Xato | [→] To'g'ri | [↑] Audio</div>
+    <div class="hotkey-info animated-section">💡 [Space] O'girish | [←] Xato | [→] To'g'ri | [↑] Audio</div>
 
-    <div class="boxes-container">
+    <div class="boxes-container animated-section">
         <div class="box"><h3>1-Quti</h3><div class="count" id="count-1">0</div><div class="due" id="due-1"></div></div>
         <div class="box"><h3>2-Quti</h3><div class="count" id="count-2">0</div><div class="due" id="due-2"></div></div>
         <div class="box"><h3>3-Quti</h3><div class="count" id="count-3">0</div><div class="due" id="due-3"></div></div>
@@ -467,34 +282,13 @@
         <div class="box"><h3>5-Quti</h3><div class="count" id="count-5">0</div><div class="due" id="due-5"></div></div>
     </div>
 
-    <div class="db-section" id="dbSection">
-        <h2 style="font-size: 1.1rem; margin-bottom: 12px;">🗄️ O'zlashtirilgan Maʼlumotlar Bazasi</h2>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">5-qutidan o'tgan barcha kartalaringiz shu bazada yig'iladi:</p>
-        <div id="dbCardList"></div>
-    </div>
-
-    <div class="stats-section" id="statsSection">
-        <h2 style="font-size: 1.1rem; margin-bottom: 12px;">📊 O'zlashtirish Statistikasi</h2>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="num" id="statTotal">0</div>
-                <div class="lbl">Jami Takrorlashlar</div>
-            </div>
-            <div class="stat-card">
-                <div class="num" id="statAccuracy">0%</div>
-                <div class="lbl">Aniqlik Ko'rsatkichi</div>
-            </div>
-        </div>
-        <h3 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Oxirgi 7 kunlik faollik:</h3>
-        <div class="chart-container" id="statsChart"></div>
-    </div>
-
-    <div class="list-section">
-        <h2 style="font-size: 1.1rem; margin-bottom: 10px;">To'plamdagi Kartochkalar</h2>
+    <div class="list-section animated-section">
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">To'plamdagi Kartalar</h2>
+        <input type="text" id="searchInput" class="search-bar" placeholder="🔍 So'z yoki #teg izlash..." onkeyup="filterCards()">
         <div id="cardList"></div>
     </div>
 
-    <div class="controls">
+    <div class="controls animated-section" style="margin-bottom: 40px;">
         <button class="btn-full btn-secondary" onclick="exportData()">📁 Export</button>
         <button class="btn-full btn-secondary" onclick="document.getElementById('importFile').click()">📥 Import</button>
         <input type="file" id="importFile" style="display:none;" onchange="importData(event)" accept=".json">
@@ -507,35 +301,97 @@
     let learnedDeck = JSON.parse(localStorage.getItem('leitner_learned')) || {};
     let currentDeck = localStorage.getItem('leitner_current_deck') || "Asosiy";
     let soundEnabled = JSON.parse(localStorage.getItem('leitner_sound')) ?? true;
+    
+    // Custom Intervals & Gamification
+    let boxIntervals = JSON.parse(localStorage.getItem('leitner_intervals')) || { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
+    let xpPoints = parseInt(localStorage.getItem('leitner_xp')) || 0;
+    
     let currentCardIndex = -1;
     let editingCardId = null;
 
-    const boxIntervals = { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
+    // Initialize/Migrate old data format
+    Object.keys(decks).forEach(deckName => {
+        decks[deckName].forEach(card => {
+            if (!card.nextReview) card.nextReview = Date.now();
+            if (card.fails === undefined) card.fails = 0;
+            if (card.tags === undefined) card.tags = "";
+        });
+    });
 
-    // O'zbekiston vaqti (Asia/Tashkent UTC+5) bo'yicha kelasi kunning 00:00:00 vaqtini milisoniyalarda hisoblash
+    if (localStorage.getItem('leitner_dark') === 'true') document.body.classList.add('dark-mode');
+
     function getNextUzbekistanMidnight() {
         const now = new Date();
         const uzString = now.toLocaleString("en-US", { timeZone: "Asia/Tashkent" });
         const uzDate = new Date(uzString);
         const nextMidnight = new Date(uzDate);
-        nextMidnight.setHours(24, 0, 0, 0); // Ertangi 00:00:00
-        const diffMs = nextMidnight.getTime() - uzDate.getTime();
-        return Date.now() + diffMs;
+        nextMidnight.setHours(24, 0, 0, 0);
+        return Date.now() + (nextMidnight.getTime() - uzDate.getTime());
     }
 
-    // Migratsiya va xavfsizlik
-    Object.keys(decks).forEach(deckName => {
-        decks[deckName].forEach(card => {
-            if (!card.nextReview) card.nextReview = Date.now();
-            if (card.fails === undefined) card.fails = 0;
+    // Gamification Logic
+    function updateXPBadge() {
+        localStorage.setItem('leitner_xp', xpPoints);
+        document.getElementById('xpCount').innerText = `${xpPoints} XP`;
+        
+        let level = Math.floor(xpPoints / 150);
+        let title = "O'rganuvchi";
+        if (level >= 1 && level < 3) title = "Havaskor";
+        else if (level >= 3 && level < 6) title = "Talaba";
+        else if (level >= 6 && level < 10) title = "Pro";
+        else if (level >= 10) title = "Master";
+        
+        document.getElementById('levelBadge').innerHTML = `🎓 ${title} <span class="xp-text">${xpPoints} XP</span>`;
+    }
+
+    // Auto Translate Logic (Using MyMemory free API)
+    async function autoTranslate() {
+        let front = document.getElementById('frontInput').value.trim();
+        if(!front) return;
+        
+        let btn = document.querySelector('.btn-auto');
+        btn.innerText = "⏳...";
+        try {
+            let res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(front)}&langpair=en|uz`);
+            let data = await res.json();
+            if(data && data.responseData && data.responseData.translatedText) {
+                document.getElementById('backInput').value = data.responseData.translatedText.toLowerCase();
+            }
+        } catch(e) {
+            console.error("Tarjimada xatolik", e);
+        }
+        btn.innerText = "🌐 Avto";
+    }
+
+    // Intervals Settings Save
+    function openSettings() {
+        document.getElementById('int2').value = boxIntervals[2];
+        document.getElementById('int3').value = boxIntervals[3];
+        document.getElementById('int4').value = boxIntervals[4];
+        document.getElementById('int5').value = boxIntervals[5];
+    }
+    
+    function saveIntervals() {
+        boxIntervals[2] = parseInt(document.getElementById('int2').value) || 3;
+        boxIntervals[3] = parseInt(document.getElementById('int3').value) || 5;
+        boxIntervals[4] = parseInt(document.getElementById('int4').value) || 7;
+        boxIntervals[5] = parseInt(document.getElementById('int5').value) || 15;
+        localStorage.setItem('leitner_intervals', JSON.stringify(boxIntervals));
+        toggleSection('settingsSection');
+        alert("Oraliqlar saqlandi!");
+    }
+
+    // Search / Filter Cards
+    function filterCards() {
+        let query = document.getElementById('searchInput').value.toLowerCase();
+        let items = document.querySelectorAll('.card-list-item');
+        items.forEach(item => {
+            let text = item.innerText.toLowerCase();
+            item.style.display = text.includes(query) ? 'flex' : 'none';
         });
-    });
-
-    if (localStorage.getItem('leitner_dark') === 'true') {
-        document.body.classList.add('dark-mode');
     }
 
-    // Sidebar va Hamburger toggle
+    // UI Toggles
     function toggleSidebar() {
         document.getElementById('hamburger').classList.toggle('active');
         document.getElementById('sidebar').classList.toggle('active');
@@ -547,24 +403,34 @@
         localStorage.setItem('leitner_dark', document.body.classList.contains('dark-mode'));
     }
 
-    // Web Audio FX
+    function toggleSection(sectionId) {
+        let sections = ['dbSection', 'statsSection', 'bulkSection', 'settingsSection'];
+        sections.forEach(id => {
+            if(id !== sectionId) document.getElementById(id).style.display = 'none';
+        });
+        let target = document.getElementById(sectionId);
+        if (target.style.display === 'block' || target.style.display === 'flex') {
+            target.style.display = 'none';
+        } else {
+            target.style.display = 'block';
+            if(sectionId === 'statsSection') renderStats();
+            if(sectionId === 'dbSection') renderDatabase();
+            if(sectionId === 'settingsSection') openSettings();
+        }
+    }
+
     function playSound(type) {
         if (!soundEnabled) return;
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination);
-            const now = ctx.currentTime;
-
+            const osc = ctx.createOscillator(); const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination); const now = ctx.currentTime;
             if (type === 'correct') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, now);
-                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, now); osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
                 gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
                 osc.start(now); osc.stop(now + 0.2);
             } else if (type === 'wrong') {
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, now);
-                osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
                 gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
                 osc.start(now); osc.stop(now + 0.2);
             } else if (type === 'flip') {
@@ -575,13 +441,8 @@
         } catch(e) {}
     }
 
-    function toggleSound() {
-        soundEnabled = !soundEnabled;
-        localStorage.setItem('leitner_sound', JSON.stringify(soundEnabled));
-        document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan";
-    }
+    function toggleSound() { soundEnabled = !soundEnabled; localStorage.setItem('leitner_sound', JSON.stringify(soundEnabled)); document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan"; }
 
-    // Hotkeys
     window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
         if (e.code === 'Space') { e.preventDefault(); flipCard(); }
@@ -590,63 +451,6 @@
         else if (e.code === 'ArrowUp' || e.key === '3') { e.preventDefault(); speakCurrent(e); }
     });
 
-    function enableNotifications() {
-        if ("Notification" in window) {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    alert("Bildirishnomalar yoqildi!");
-                    checkAndNotify();
-                }
-            });
-        }
-    }
-
-    function checkAndNotify() {
-        let totalDue = 0;
-        Object.keys(decks).forEach(d => {
-            totalDue += decks[d].filter(c => c.nextReview <= Date.now()).length;
-        });
-        if (totalDue > 0 && Notification.permission === "granted") {
-            new Notification("Leitner Pro", { 
-                body: `Soat 00:00 bo'ldi! Bugun takrorlashingiz kerak bo'lgan ${totalDue} ta so'z bor!`, 
-                icon: "🔥" 
-            });
-        }
-    }
-
-    // Soat 00:00 kelganda avtomatik bildirishnoma yuborish va sahifani yangilash
-    function scheduleMidnightCheck() {
-        const msUntilMidnight = getNextUzbekistanMidnight() - Date.now();
-        setTimeout(() => {
-            checkAndNotify();
-            updateUI();
-            scheduleMidnightCheck(); // Kelasi kun uchun qayta sozlash
-        }, msUntilMidnight + 1000);
-    }
-    scheduleMidnightCheck();
-
-    // Har 1 minutda tekshirib turish
-    setInterval(() => {
-        updateUI();
-    }, 60000);
-
-    function updateStreak() {
-        let lastVisit = localStorage.getItem('leitner_last_date');
-        let streak = parseInt(localStorage.getItem('leitner_streak')) || 0;
-        let today = new Date().toDateString();
-
-        if (lastVisit !== today) {
-            let yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-            if (lastVisit === yesterday.toDateString()) streak++;
-            else streak = 1; 
-            
-            localStorage.setItem('leitner_last_date', today);
-            localStorage.setItem('leitner_streak', streak);
-            checkAndNotify();
-        }
-        document.getElementById('streakDays').innerText = streak;
-    }
-
     function saveAll() {
         localStorage.setItem('leitner_decks', JSON.stringify(decks));
         localStorage.setItem('leitner_learned', JSON.stringify(learnedDeck));
@@ -654,83 +458,32 @@
         updateUI();
     }
 
-    function createDeck() {
-        let name = prompt("Yangi to'plam nomini kiriting:");
-        if (name && name.trim() !== "") {
-            name = name.trim();
-            if (!decks[name]) {
-                decks[name] = [];
-                currentDeck = name;
-                saveAll();
-                toggleSidebar();
-            } else {
-                alert("Bunday to'plam mavjud!");
-            }
-        }
-    }
-
-    function renameDeck() {
-        let newName = prompt("To'plam uchun yangi nom kiriting:", currentDeck);
-        if (newName && newName.trim() !== "" && newName.trim() !== currentDeck) {
-            newName = newName.trim();
-            if (decks[newName]) {
-                alert("Bunday nomli to'plam allaqachon mavjud!");
-                return;
-            }
-            decks[newName] = decks[currentDeck];
-            if (learnedDeck[currentDeck]) {
-                learnedDeck[newName] = learnedDeck[currentDeck];
-                delete learnedDeck[currentDeck];
-            }
-            delete decks[currentDeck];
-            currentDeck = newName;
-            saveAll();
-            toggleSidebar();
-        }
-    }
-
-    function deleteDeck() {
-        let keys = Object.keys(decks);
-        if (keys.length <= 1) {
-            alert("Kamida bitta to'plam bo'lishi kerak!");
-            return;
-        }
-        if (confirm(`"${currentDeck}" to'plamini o'chirishni tasdiqlaysizmi? Undagi barcha so'zlar o'chib ketadi!`)) {
-            delete decks[currentDeck];
-            delete learnedDeck[currentDeck];
-            currentDeck = Object.keys(decks)[0];
-            saveAll();
-            toggleSidebar();
-        }
-    }
-
+    function createDeck() { let name = prompt("Yangi to'plam nomini kiriting:"); if (name && name.trim() !== "") { name = name.trim(); if (!decks[name]) { decks[name] = []; currentDeck = name; saveAll(); toggleSidebar(); } else { alert("Bunday to'plam mavjud!"); } } }
+    function renameDeck() { let newName = prompt("Yangi nom:", currentDeck); if (newName && newName.trim() !== "" && newName.trim() !== currentDeck) { newName = newName.trim(); if (decks[newName]) { alert("Mavjud!"); return; } decks[newName] = decks[currentDeck]; if (learnedDeck[currentDeck]) { learnedDeck[newName] = learnedDeck[currentDeck]; delete learnedDeck[currentDeck]; } delete decks[currentDeck]; currentDeck = newName; saveAll(); toggleSidebar(); } }
+    function deleteDeck() { if (Object.keys(decks).length <= 1) { alert("Kamida 1 ta to'plam bo'lishi kerak!"); return; } if (confirm(`"${currentDeck}" o'chirilsinmi?`)) { delete decks[currentDeck]; delete learnedDeck[currentDeck]; currentDeck = Object.keys(decks)[0]; saveAll(); toggleSidebar(); } }
     function changeDeck() { currentDeck = document.getElementById('deckSelect').value; saveAll(); }
 
-    function formatCloze(text, isBack = false) {
-        if (!text) return "";
-        return text.replace(/\{\{(.*?)\}\}/g, (match, p1) => {
-            return isBack 
-                ? `<span style="color:var(--success); font-weight:bold; text-decoration:underline;">${p1}</span>`
-                : `<span style="background:#e0e7ff; color:var(--primary); padding:2px 8px; border-radius:6px; font-weight:bold;">[...]</span>`;
-        });
+    function getFormattedTags(tagStr) {
+        if(!tagStr) return "";
+        return tagStr.split(',').map(t => `<span class="tag-badge">${t.trim().startsWith('#') ? t.trim() : '#' + t.trim()}</span>`).join('');
     }
 
     function addOrUpdateCard() {
         const front = document.getElementById('frontInput').value.trim();
         const back = document.getElementById('backInput').value.trim();
-        const img = document.getElementById('imgInput').value.trim();
+        const tags = document.getElementById('tagInput').value.trim();
 
         if (front && back) {
             if (editingCardId) {
                 let card = decks[currentDeck].find(c => c.id === editingCardId);
-                if (card) { card.front = front; card.back = back; card.img = img; }
-                editingCardId = null; document.getElementById('btnAdd').innerText = "Qo'shish";
+                if (card) { card.front = front; card.back = back; card.tags = tags; }
+                editingCardId = null; document.getElementById('btnAdd').innerText = "Karta Qo'shish";
             } else {
-                decks[currentDeck].push({ id: Date.now(), front, back, img, box: 1, nextReview: Date.now(), fails: 0 });
+                decks[currentDeck].push({ id: Date.now(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 });
             }
             document.getElementById('frontInput').value = '';
             document.getElementById('backInput').value = '';
-            document.getElementById('imgInput').value = '';
+            document.getElementById('tagInput').value = '';
             saveAll();
         }
     }
@@ -740,62 +493,31 @@
         if (card) {
             document.getElementById('frontInput').value = card.front;
             document.getElementById('backInput').value = card.back;
-            document.getElementById('imgInput').value = card.img || '';
+            document.getElementById('tagInput').value = card.tags || "";
             editingCardId = id; document.getElementById('btnAdd').innerText = "Saqlash";
-            document.getElementById('frontInput').focus();
+            window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('frontInput').focus();
         }
     }
+    function deleteCard(id) { if(confirm("O'chirmoqchimisiz?")) { decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id); saveAll(); } }
 
-    function deleteCard(id) {
-        if(confirm("O'chirmoqchimisiz?")) {
-            decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id); saveAll();
-        }
-    }
-
-    function flipCard() {
-        if (currentCardIndex !== -1) {
-            playSound('flip');
-            document.getElementById('activeCard').classList.toggle('flipped');
-        }
-    }
-
-    function speakCurrent(event) {
-        if(event) event.stopPropagation();
-        if (currentCardIndex === -1) return;
-        let rawText = decks[currentDeck][currentCardIndex].back.replace(/\{\{(.*?)\}\}/g, '$1');
-        let utterance = new SpeechSynthesisUtterance(rawText);
-        utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance);
-    }
+    function flipCard() { if (currentCardIndex !== -1) { playSound('flip'); document.getElementById('activeCard').classList.toggle('flipped'); } }
+    function speakCurrent(event) { if(event) event.stopPropagation(); if (currentCardIndex === -1) return; let rawText = decks[currentDeck][currentCardIndex].back; let utterance = new SpeechSynthesisUtterance(rawText); utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance); }
 
     function checkTypedAnswer() {
         if (currentCardIndex === -1) return;
-        const typed = document.getElementById('typeInput').value.trim().toLowerCase();
-        if (!typed) return;
-        
-        let rawAnswer = decks[currentDeck][currentCardIndex].back.replace(/\{\{(.*?)\}\}/g, '$1').trim().toLowerCase();
+        const typed = document.getElementById('typeInput').value.trim().toLowerCase(); if (!typed) return;
+        let rawAnswer = decks[currentDeck][currentCardIndex].back.trim().toLowerCase();
         let isCorrect = typed === rawAnswer;
         
-        let feedback = document.getElementById('typeFeedback');
-        feedback.style.display = 'block';
-        if (isCorrect) {
-            feedback.style.color = 'var(--success)';
-            feedback.innerText = "To'g'ri! 🎉";
-        } else {
-            feedback.style.color = 'var(--danger)';
-            feedback.innerText = `Xato! To'g'ri javob: ${rawAnswer}`;
-        }
-
-        setTimeout(() => {
-            document.getElementById('typeInput').value = '';
-            feedback.style.display = 'none';
-            processCard(isCorrect);
-        }, 1200);
+        let feedback = document.getElementById('typeFeedback'); feedback.style.display = 'block';
+        if (isCorrect) { feedback.style.color = 'var(--success)'; feedback.style.background = 'var(--success-bg)'; feedback.innerText = "To'g'ri! 🎉"; } 
+        else { feedback.style.color = 'var(--danger)'; feedback.style.background = 'var(--danger-bg)'; feedback.innerText = `Xato! Javob: ${rawAnswer}`; }
+        setTimeout(() => { document.getElementById('typeInput').value = ''; feedback.style.display = 'none'; processCard(isCorrect); }, 1300);
     }
 
     function processCard(isCorrect) {
         if (currentCardIndex === -1) return;
         let card = decks[currentDeck][currentCardIndex];
-        
         playSound(isCorrect ? 'correct' : 'wrong');
 
         let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
@@ -806,244 +528,103 @@
         setTimeout(() => document.body.classList.remove(isCorrect ? 'glow-success' : 'glow-danger'), 400);
 
         if (isCorrect) { 
+            xpPoints += 10; updateXPBadge();
             if (card.box < 5) {
                 card.box++; 
                 card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
             } else {
-                // 5-qutidan muvaffaqiyatli o'tdi -> O'zlashtirilgan Ma'lumotlar Bazasiga o'tadi
                 if (!learnedDeck[currentDeck]) learnedDeck[currentDeck] = [];
-                card.completedAt = new Date().toLocaleDateString();
-                learnedDeck[currentDeck].push(card);
+                card.completedAt = new Date().toLocaleDateString(); learnedDeck[currentDeck].push(card);
                 decks[currentDeck] = decks[currentDeck].filter(c => c.id !== card.id);
             }
         } else { 
-            // XATO: 1-qutiga tushadi va O'zbekiston vaqti bilan kelasi kun 00:00:00 gacha seansda qayta chiqmaydi
-            card.box = 1; 
-            card.nextReview = getNextUzbekistanMidnight();
-            card.fails = (card.fails || 0) + 1;
+            card.box = 1; card.nextReview = getNextUzbekistanMidnight(); card.fails = (card.fails || 0) + 1;
         }
 
         let cardEl = document.getElementById('activeCard');
-        if (cardEl.classList.contains('flipped')) {
-            cardEl.classList.remove('flipped');
-            setTimeout(saveAll, 400); 
-        } else { 
-            setTimeout(saveAll, 150); 
-        }
-    }
-
-    function toggleStats() {
-        let section = document.getElementById('statsSection');
-        document.getElementById('dbSection').style.display = 'none';
-        if (section.style.display === 'block') section.style.display = 'none';
-        else { renderStats(); section.style.display = 'block'; }
-    }
-
-    function toggleDatabase() {
-        let section = document.getElementById('dbSection');
-        document.getElementById('statsSection').style.display = 'none';
-        if (section.style.display === 'block') section.style.display = 'none';
-        else { renderDatabase(); section.style.display = 'block'; }
-    }
-
-    function toggleBulk() {
-        let section = document.getElementById('bulkSection');
-        section.style.display = (section.style.display === 'flex') ? 'none' : 'flex';
+        if (cardEl.classList.contains('flipped')) { cardEl.classList.remove('flipped'); setTimeout(saveAll, 400); } 
+        else { setTimeout(saveAll, 150); }
     }
 
     function processBulkImport() {
-        const text = document.getElementById('bulkInput').value.trim();
-        if (!text) return;
-        const lines = text.split('\n');
-        let count = 0;
+        const text = document.getElementById('bulkInput').value.trim(); if (!text) return;
+        const lines = text.split('\n'); let count = 0;
         lines.forEach(line => {
-            let parts = line.split(/[,;\-\t]/);
+            let parts = line.split(/[,;\t]/);
             if (parts.length >= 2) {
-                let front = parts[0].trim();
-                let back = parts.slice(1).join(',').trim();
-                if (front && back) {
-                    decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, img: '', box: 1, nextReview: Date.now(), fails: 0 });
-                    count++;
-                }
+                let front = parts[0].trim(); let back = parts[1].trim(); let tags = parts[2] ? parts[2].trim() : "";
+                if (front && back) { decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 }); count++; }
             }
         });
-        document.getElementById('bulkInput').value = '';
-        toggleBulk(); saveAll();
-        alert(`${count} ta so'z qo'shildi!`);
+        document.getElementById('bulkInput').value = ''; toggleSection('bulkSection'); saveAll(); alert(`${count} ta so'z qo'shildi! 🎉`);
     }
 
     function renderDatabase() {
-        let listContainer = document.getElementById('dbCardList');
-        listContainer.innerHTML = '';
+        let listContainer = document.getElementById('dbCardList'); listContainer.innerHTML = '';
         let items = learnedDeck[currentDeck] || [];
-
-        if (items.length === 0) {
-            listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px;">Hozircha bazaga tushgan kartalar yo'q.</div>`;
-            return;
-        }
-
-        items.forEach(c => {
-            let div = document.createElement('div');
-            div.className = 'card-item';
-            div.innerHTML = `
-                <div>
-                    <strong>${c.front}</strong> - ${c.back}<br>
-                    <span style="font-size:0.75rem; color:var(--success);">✅ O'zlashtirilgan sana: ${c.completedAt || 'Yaqinda'}</span>
-                </div>
-            `;
-            listContainer.appendChild(div);
-        });
+        if (items.length === 0) { listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px;">Baza bo'sh.</div>`; return; }
+        items.forEach(c => { listContainer.innerHTML += `<div class="card-item"><div><strong>${c.front}</strong> - ${c.back}<br><span style="font-size:0.75rem; color:var(--success);">✅ ${c.completedAt || 'Yaqinda'}</span></div></div>`; });
     }
 
     function renderStats() {
         let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
-        let total = history.length;
-        let correct = history.filter(h => h.isCorrect).length;
-        let accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-
-        document.getElementById('statTotal').innerText = total;
-        document.getElementById('statAccuracy').innerText = accuracy + '%';
-
-        let last7Days = {};
-        for (let i = 6; i >= 0; i--) {
-            let d = new Date(); d.setDate(d.getDate() - i);
-            last7Days[d.toLocaleDateString()] = 0;
-        }
-
-        history.forEach(h => {
-            if (last7Days[h.date] !== undefined) last7Days[h.date]++;
-        });
-
-        let chartContainer = document.getElementById('statsChart');
-        chartContainer.innerHTML = '';
-        let maxVal = Math.max(...Object.values(last7Days), 1);
-
-        Object.keys(last7Days).forEach(date => {
-            let count = last7Days[date];
-            let height = Math.round((count / maxVal) * 80) + 5;
-            
-            let barWrapper = document.createElement('div');
-            barWrapper.style.cssText = "display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;";
-            barWrapper.innerHTML = `
-                <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${count}</div>
-                <div style="width:100%; max-width:24px; background:var(--border-color); border-radius:6px; height:80px; display:flex; align-items:flex-end; overflow:hidden;">
-                    <div style="width:100%; height:${height}px; background:var(--primary); border-radius:6px; transition: height 0.5s ease;"></div>
-                </div>
-                <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px; width:100%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${date.split('.')[0] || date.split('/')[0]}</div>
-            `;
-            chartContainer.appendChild(barWrapper);
-        });
+        let total = history.length; let correct = history.filter(h => h.isCorrect).length;
+        document.getElementById('statTotal').innerText = total; document.getElementById('statAccuracy').innerText = (total > 0 ? Math.round((correct / total) * 100) : 0) + '%';
     }
 
     function updateUI() {
+        updateXPBadge();
         let select = document.getElementById('deckSelect'); select.innerHTML = '';
-        Object.keys(decks).forEach(d => {
-            let opt = document.createElement('option'); opt.value = d; opt.innerText = d;
-            if (d === currentDeck) opt.selected = true; select.appendChild(opt);
-        });
+        Object.keys(decks).forEach(d => { let opt = document.createElement('option'); opt.value = d; opt.innerText = d; if (d === currentDeck) opt.selected = true; select.appendChild(opt); });
 
-        let cards = decks[currentDeck] || [];
-        let learnedCards = learnedDeck[currentDeck] || [];
+        let cards = decks[currentDeck] || []; let learnedCards = learnedDeck[currentDeck] || [];
         document.getElementById('dbCount').innerText = learnedCards.length;
-
         let now = Date.now();
 
         for (let i = 1; i <= 5; i++) {
-            let boxCards = cards.filter(c => c.box === i);
-            let dueCards = boxCards.filter(c => c.nextReview <= now).length;
-            
-            document.getElementById(`count-${i}`).innerText = boxCards.length;
-            let dueText = document.getElementById(`due-${i}`);
-            dueText.innerText = dueCards > 0 ? `+${dueCards} tayyor` : '';
+            let boxCards = cards.filter(c => c.box === i); let dueCards = boxCards.filter(c => c.nextReview <= now).length;
+            document.getElementById(`count-${i}`).innerText = boxCards.length; document.getElementById(`due-${i}`).innerText = dueCards > 0 ? `+${dueCards} tayyor` : '';
         }
 
-        let totalCardsInDeck = cards.length + learnedCards.length;
-        if (totalCardsInDeck > 0) {
-            let percent = Math.round((learnedCards.length / totalCardsInDeck) * 100);
-            document.getElementById('progressBar').style.width = percent + '%';
-            document.getElementById('progressText').innerText = percent + '%';
-        } else {
-            document.getElementById('progressBar').style.width = '0%'; document.getElementById('progressText').innerText = '0%';
+        let total = cards.length + learnedCards.length;
+        if (total > 0) {
+            let percent = Math.round((learnedCards.length / total) * 100);
+            document.getElementById('progressBar').style.width = percent + '%'; document.getElementById('progressText').innerText = percent + '%';
         }
 
         let available = cards.filter(c => c.nextReview <= now);
-        
         if (available.length > 0) {
             document.getElementById('reviewBanner').style.display = 'block';
             let randomCard = available[Math.floor(Math.random() * available.length)];
             currentCardIndex = cards.findIndex(c => c.id === randomCard.id);
-            
-            document.getElementById('frontText').innerHTML = formatCloze(randomCard.front, false);
-            document.getElementById('cardBack').innerHTML = formatCloze(randomCard.back, true);
-            
-            let fImg = document.getElementById('frontImg');
-            let bImg = document.getElementById('backImg');
-            if (randomCard.img) {
-                fImg.src = randomCard.img; fImg.style.display = 'block';
-                bImg.src = randomCard.img; bImg.style.display = 'block';
-            } else {
-                fImg.style.display = 'none'; bImg.style.display = 'none';
-            }
-
+            document.getElementById('frontText').innerText = randomCard.front;
+            document.getElementById('cardBack').innerText = randomCard.back;
+            document.getElementById('frontTags').innerHTML = getFormattedTags(randomCard.tags);
+            document.getElementById('backTags').innerHTML = getFormattedTags(randomCard.tags);
             document.getElementById('leechBadgeFront').style.display = (randomCard.fails >= 3) ? 'block' : 'none';
             document.getElementById('audioBtn').style.display = 'flex';
         } else {
-            document.getElementById('reviewBanner').style.display = 'none';
-            currentCardIndex = -1;
-            document.getElementById('frontText').innerText = "Hozircha hamma darslar tugadi! 🏖️", "Yetarli dars qildingiz, endi dam oling! 🛋️", "Kartalar tugadi, ertaga keling! 😶‍🌫️";
+            document.getElementById('reviewBanner').style.display = 'none'; currentCardIndex = -1;
+            document.getElementById('frontText').innerText = "Hozircha hamma darslar tugadi! 🏖️";
             document.getElementById('cardBack').innerText = "";
-            document.getElementById('frontImg').style.display = 'none';
-            document.getElementById('backImg').style.display = 'none';
-            document.getElementById('leechBadgeFront').style.display = 'none';
-            document.getElementById('audioBtn').style.display = 'none';
+            document.getElementById('frontTags').innerHTML = ""; document.getElementById('backTags').innerHTML = "";
+            document.getElementById('leechBadgeFront').style.display = 'none'; document.getElementById('audioBtn').style.display = 'none';
         }
 
         let list = document.getElementById('cardList'); list.innerHTML = '';
         cards.forEach(c => {
-            let dateStr = new Date(c.nextReview).toLocaleDateString();
-            let leechBadge = (c.fails >= 3) ? `<span style="color:#ef4444; font-size:0.75rem; font-weight:bold;"> [⚠️ Eslab qolishda qiynalgansiz!]</span>` : '';
-            let div = document.createElement('div'); div.className = 'card-item';
+            let tagHTML = c.tags ? `<div style="margin-top:4px;">${getFormattedTags(c.tags)}</div>` : '';
+            let div = document.createElement('div'); div.className = 'card-item card-list-item';
             div.innerHTML = `
-                <div><strong>${c.front}</strong> - ${c.back} ${leechBadge}<br>
-                <span style="font-size:0.75rem; color:var(--primary);">(${c.box}-quti | Keyingi: ${dateStr})</span></div>
-                <div class="card-item-actions">
-                    <button class="action-icon" onclick="editCard(${c.id})">✏️</button>
-                    <button class="action-icon" onclick="deleteCard(${c.id})">🗑️</button>
-                </div>
-            `;
+                <div><strong style="font-size:1.05rem;">${c.front}</strong> - ${c.back}<br>
+                <span style="font-size:0.75rem; color:var(--primary); font-weight:600;">(${c.box}-quti | Keyingi: ${new Date(c.nextReview).toLocaleDateString()})</span>
+                ${tagHTML}</div>
+                <div class="card-item-actions"><button class="action-icon" onclick="editCard(${c.id})">✏️</button><button class="action-icon" onclick="deleteCard(${c.id})">🗑️</button></div>`;
             list.appendChild(div);
         });
-
-        if (document.getElementById('statsSection').style.display === 'block') renderStats();
-        if (document.getElementById('dbSection').style.display === 'block') renderDatabase();
+        filterCards(); // Keep search active if user typed something
     }
 
-    function exportData() {
-        let exportObject = { decks: decks, learnedDeck: learnedDeck };
-        let a = document.createElement('a');
-        a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObject));
-        a.download = "leitner_backup.json"; a.click();
-    }
-    function importData(event) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            try { 
-                let data = JSON.parse(e.target.result);
-                if (data.decks) {
-                    decks = data.decks;
-                    learnedDeck = data.learnedDeck || {};
-                } else {
-                    decks = data;
-                }
-                currentDeck = Object.keys(decks)[0] || "Asosiy"; 
-                saveAll(); 
-                alert("Yuklandi!"); 
-            } 
-            catch (err) { alert("Xatolik!"); }
-        }; reader.readAsText(event.target.files[0]);
-    }
-
-    updateStreak();
     updateUI();
 </script>
 </body>
