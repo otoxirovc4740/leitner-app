@@ -70,7 +70,6 @@
             width: 100%;
         }
 
-        /* Animatsion Gamburger Tugmasi */
         .hamburger {
             width: 44px;
             height: 44px;
@@ -126,7 +125,6 @@
             transition: transform 0.2s ease;
         }
 
-        /* Yondan Chiquvchi Menyu (Sidebar + Blur Overlay) */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -169,7 +167,6 @@
             transform: translateX(0);
         }
 
-        /* Sidebar ichidagi 100% Tugmalar */
         select {
             width: 100%;
             padding: 14px;
@@ -209,6 +206,7 @@
 
         .btn-primary { background: var(--primary); }
         .btn-info { background: #0284c7; }
+        .btn-db { background: #059669; }
         .btn-warning { background: #d97706; }
         .btn-theme { background: #8b5cf6; }
         .btn-secondary { background: #475569; }
@@ -216,13 +214,11 @@
         .btn-edit { background: #64748b; }
         .btn-delete { background: #ef4444; }
 
-        /* Progress Bar */
         .progress-wrapper { width: 100%; }
         .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
         .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 12px; height: 12px; overflow: hidden; }
         .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        /* Input Section */
         .input-section {
             background: var(--card-bg);
             padding: 16px;
@@ -248,7 +244,6 @@
         }
         input:focus, textarea:focus { border-color: var(--primary); }
 
-        /* Review Banner */
         .review-banner {
             width: 100%;
             background: #fffbeb;
@@ -262,7 +257,6 @@
             animation: fadeIn 0.3s ease;
         }
 
-        /* 3D Flip Card - Spring Motion */
         .card-container { width: 100%; height: 230px; perspective: 1000px; }
         .card { 
             width: 100%; height: 100%; position: relative; transform-style: preserve-3d; 
@@ -283,15 +277,12 @@
         .card-img { max-height: 80px; max-width: 90%; margin-bottom: 10px; border-radius: 10px; object-fit: cover; }
         .leech-tag { position: absolute; top: 15px; left: 15px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 4px 8px; border-radius: 8px; border: 1px solid #fca5a5; font-weight: 800; }
 
-        /* Typing Section */
         .typing-section { display: flex; flex-direction: column; gap: 8px; width: 100%; }
 
-        /* Controls */
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
         .btn-wrong { background: var(--danger-bg); color: var(--danger); }
         .btn-correct { background: var(--success-bg); color: var(--success); }
 
-        /* Qutilar Dizayni */
         .boxes-container {
             display: grid; 
             grid-template-columns: repeat(6, 1fr); 
@@ -320,8 +311,7 @@
         .box .count { font-size: 1.2rem; font-weight: 800; }
         .box .due { font-size: 0.7rem; color: var(--danger); font-weight: 700; margin-top: 2px; }
 
-        /* Analytics Panel */
-        .stats-section {
+        .stats-section, .db-section {
             width: 100%; 
             background: var(--card-bg); 
             border-radius: 20px;
@@ -347,7 +337,6 @@
             width: 100%;
         }
 
-        /* Bulk Section */
         .bulk-section {
             display: none;
             background: var(--card-bg);
@@ -360,7 +349,6 @@
             animation: fadeIn 0.3s ease;
         }
 
-        /* Card List */
         .list-section { width: 100%; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
         .card-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .card-item-actions { display: flex; gap: 10px; }
@@ -399,6 +387,7 @@
         
         <hr style="border:0; border-top:1px solid var(--border-color); margin: 6px 0;">
 
+        <button class="btn-full btn-db" onclick="toggleDatabase(); toggleSidebar();">🗄️ Baza (<span id="dbCount">0</span> ta karta)</button>
         <button class="btn-full btn-info" onclick="toggleStats(); toggleSidebar();">📊 Statistika</button>
         <button class="btn-full btn-warning" onclick="enableNotifications()">🔔 Bildirishnomalar</button>
         <button class="btn-full btn-theme" onclick="toggleDarkMode()">🌙 Tungi Rejim</button>
@@ -466,6 +455,12 @@
         <div class="box"><h3>5-Quti</h3><div class="count" id="count-5">0</div><div class="due" id="due-5"></div></div>
     </div>
 
+    <div class="db-section" id="dbSection">
+        <h2 style="font-size: 1.1rem; margin-bottom: 12px;">🗄️ O'zlashtirilgan Kartalar Bazasi</h2>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">5-qutidan muvaffaqiyatli o'tgan kartalaringiz shu yerda saqlanadi:</p>
+        <div id="dbCardList"></div>
+    </div>
+
     <div class="stats-section" id="statsSection">
         <h2 style="font-size: 1.1rem; margin-bottom: 12px;">📊 O'zlashtirish Statistikasi</h2>
         <div class="stats-grid">
@@ -497,12 +492,24 @@
 
 <script>
     let decks = JSON.parse(localStorage.getItem('leitner_decks')) || { "Asosiy": [] };
+    let learnedDeck = JSON.parse(localStorage.getItem('leitner_learned')) || {};
     let currentDeck = localStorage.getItem('leitner_current_deck') || "Asosiy";
     let soundEnabled = JSON.parse(localStorage.getItem('leitner_sound')) ?? true;
     let currentCardIndex = -1;
     let editingCardId = null;
 
     const boxIntervals = { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
+
+    // O'zbekiston vaqti (UTC+5) bo'yicha keyingi kungi 00:00:00 vaqtini hisoblash
+    function getNextUzbekistanMidnight() {
+        const now = new Date();
+        const uzString = now.toLocaleString("en-US", { timeZone: "Asia/Tashkent" });
+        const uzDate = new Date(uzString);
+        const nextMidnight = new Date(uzDate);
+        nextMidnight.setHours(24, 0, 0, 0); // ertangi 00:00:00
+        const diffMs = nextMidnight.getTime() - uzDate.getTime();
+        return Date.now() + diffMs;
+    }
 
     // Migratsiya va xavfsizlik
     Object.keys(decks).forEach(deckName => {
@@ -585,7 +592,7 @@
     function checkAndNotify() {
         let totalDue = 0;
         Object.keys(decks).forEach(d => {
-            totalDue += decks[d].filter(c => c.box < 5 && c.nextReview <= Date.now()).length;
+            totalDue += decks[d].filter(c => c.box <= 5 && c.nextReview <= Date.now()).length;
         });
         if (totalDue > 0 && Notification.permission === "granted") {
             new Notification("Leitner Pro", { body: `Bugun takrorlashingiz kerak bo'lgan ${totalDue} ta so'z bor!`, icon: "🔥" });
@@ -611,11 +618,11 @@
 
     function saveAll() {
         localStorage.setItem('leitner_decks', JSON.stringify(decks));
+        localStorage.setItem('leitner_learned', JSON.stringify(learnedDeck));
         localStorage.setItem('leitner_current_deck', currentDeck);
         updateUI();
     }
 
-    /* Deck Boshqaruvi: Yaratish, Nomini O'zgartirish va O'chirish */
     function createDeck() {
         let name = prompt("Yangi to'plam nomini kiriting:");
         if (name && name.trim() !== "") {
@@ -640,6 +647,10 @@
                 return;
             }
             decks[newName] = decks[currentDeck];
+            if (learnedDeck[currentDeck]) {
+                learnedDeck[newName] = learnedDeck[currentDeck];
+                delete learnedDeck[currentDeck];
+            }
             delete decks[currentDeck];
             currentDeck = newName;
             saveAll();
@@ -655,6 +666,7 @@
         }
         if (confirm(`"${currentDeck}" to'plamini o'chirishni tasdiqlaysizmi? Undagi barcha so'zlar o'chib ketadi!`)) {
             delete decks[currentDeck];
+            delete learnedDeck[currentDeck];
             currentDeck = Object.keys(decks)[0];
             saveAll();
             toggleSidebar();
@@ -766,10 +778,17 @@
             if (card.box < 5) {
                 card.box++; 
                 card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
-            } 
+            } else {
+                // 5-qutidan muvaffaqiyatli o'tdi -> BAZAGA (MA'LUMOTLAR BAZASIGA) TUSHADI
+                if (!learnedDeck[currentDeck]) learnedDeck[currentDeck] = [];
+                card.completedAt = new Date().toLocaleDateString();
+                learnedDeck[currentDeck].push(card);
+                decks[currentDeck] = decks[currentDeck].filter(c => c.id !== card.id);
+            }
         } else { 
+            // Xato topildi: 1-qutiga tushadi va O'zbekiston vaqti bilan tunda 00:00 dan keyin qayta ko'rsatiladi
             card.box = 1; 
-            card.nextReview = Date.now();
+            card.nextReview = getNextUzbekistanMidnight();
             card.fails = (card.fails || 0) + 1;
         }
 
@@ -784,8 +803,16 @@
 
     function toggleStats() {
         let section = document.getElementById('statsSection');
+        document.getElementById('dbSection').style.display = 'none';
         if (section.style.display === 'block') section.style.display = 'none';
         else { renderStats(); section.style.display = 'block'; }
+    }
+
+    function toggleDatabase() {
+        let section = document.getElementById('dbSection');
+        document.getElementById('statsSection').style.display = 'none';
+        if (section.style.display === 'block') section.style.display = 'none';
+        else { renderDatabase(); section.style.display = 'block'; }
     }
 
     function toggleBulk() {
@@ -812,6 +839,29 @@
         document.getElementById('bulkInput').value = '';
         toggleBulk(); saveAll();
         alert(`${count} ta so'z qo'shildi!`);
+    }
+
+    function renderDatabase() {
+        let listContainer = document.getElementById('dbCardList');
+        listContainer.innerHTML = '';
+        let items = learnedDeck[currentDeck] || [];
+
+        if (items.length === 0) {
+            listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px;">Hozircha bazaga tushgan kartalar yo'q.</div>`;
+            return;
+        }
+
+        items.forEach(c => {
+            let div = document.createElement('div');
+            div.className = 'card-item';
+            div.innerHTML = `
+                <div>
+                    <strong>${c.front}</strong> - ${c.back}<br>
+                    <span style="font-size:0.75rem; color:var(--success);">✅ O'zlashtirilgan date: ${c.completedAt || 'Yaqinda'}</span>
+                </div>
+            `;
+            listContainer.appendChild(div);
+        });
     }
 
     function renderStats() {
@@ -862,26 +912,30 @@
         });
 
         let cards = decks[currentDeck] || [];
+        let learnedCards = learnedDeck[currentDeck] || [];
+        document.getElementById('dbCount').innerText = learnedCards.length;
+
         let now = Date.now();
 
         for (let i = 1; i <= 5; i++) {
             let boxCards = cards.filter(c => c.box === i);
-            let dueCards = boxCards.filter(c => c.nextReview <= now && i < 5).length;
+            let dueCards = boxCards.filter(c => c.nextReview <= now).length;
             
             document.getElementById(`count-${i}`).innerText = boxCards.length;
             let dueText = document.getElementById(`due-${i}`);
             dueText.innerText = dueCards > 0 ? `+${dueCards} tayyor` : '';
         }
 
-        if (cards.length > 0) {
-            let percent = Math.round((cards.filter(c => c.box === 5).length / cards.length) * 100);
+        let totalCardsInDeck = cards.length + learnedCards.length;
+        if (totalCardsInDeck > 0) {
+            let percent = Math.round((learnedCards.length / totalCardsInDeck) * 100);
             document.getElementById('progressBar').style.width = percent + '%';
             document.getElementById('progressText').innerText = percent + '%';
         } else {
             document.getElementById('progressBar').style.width = '0%'; document.getElementById('progressText').innerText = '0%';
         }
 
-        let available = cards.filter(c => c.box < 5 && c.nextReview <= now);
+        let available = cards.filter(c => c.nextReview <= now);
         
         if (available.length > 0) {
             document.getElementById('reviewBanner').style.display = 'block';
@@ -930,17 +984,30 @@
         });
 
         if (document.getElementById('statsSection').style.display === 'block') renderStats();
+        if (document.getElementById('dbSection').style.display === 'block') renderDatabase();
     }
 
     function exportData() {
+        let exportObject = { decks: decks, learnedDeck: learnedDeck };
         let a = document.createElement('a');
-        a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(decks));
+        a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObject));
         a.download = "leitner_backup.json"; a.click();
     }
     function importData(event) {
         let reader = new FileReader();
         reader.onload = function(e) {
-            try { decks = JSON.parse(e.target.result); currentDeck = Object.keys(decks)[0] || "Asosiy"; saveAll(); alert("Yuklandi!"); } 
+            try { 
+                let data = JSON.parse(e.target.result);
+                if (data.decks) {
+                    decks = data.decks;
+                    learnedDeck = data.learnedDeck || {};
+                } else {
+                    decks = data;
+                }
+                currentDeck = Object.keys(decks)[0] || "Asosiy"; 
+                saveAll(); 
+                alert("Yuklandi!"); 
+            } 
             catch (err) { alert("Xatolik!"); }
         }; reader.readAsText(event.target.files[0]);
     }
