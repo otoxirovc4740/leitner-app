@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitner Tizimi - Ultra Smooth</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 25px -5px rgba(99, 102, 241, 0.12);
+            --shadow-lg: 0 20px 30px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        h1 {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        /* Progress Bar Section */
+        .progress-wrapper {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--success);
+            transition: width 0.4s ease;
+        }
+
+        /* Form Styling */
+        .input-section {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+            width: 100%;
+            max-width: 520px;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        .input-section:focus-within {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        input {
+            flex: 1 1 180px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            outline: none;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background: #f8fafc;
+            transition: all 0.25s ease;
+        }
+
+        input:focus {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        button.btn-add {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            flex: 1 1 100%;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (min-width: 500px) {
+            button.btn-add { flex: 0 0 auto; }
+        }
+
+        button.btn-add:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
+        }
+
+        /* 3D Flip Card Container */
+        .card-container {
+            width: 100%;
+            max-width: 400px;
+            height: 230px;
+            perspective: 1000px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border-radius: 24px;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 28px;
+            border-radius: 24px;
+            background: var(--card-bg);
+            font-size: 1.35rem;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            user-select: none;
+        }
+
+        .audio-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .audio-btn:hover {
+            background: #e2e8f0;
+            transform: scale(1.1);
+        }
+
+        .card-face .hint {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background-color: #ffffff;
+            color: var(--primary);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 36px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-wrong {
+            background-color: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-correct {
+            background-color: var(--success-bg);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-wrong:hover {
+            background-color: var(--danger);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-correct:hover {
+            background-color: var(--success);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Boxes Grid */
+        .boxes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+            gap: 12px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        .box {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 14px 10px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary);
+        }
+
+        .box h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .box .count {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* Card List Table */
+        .list-section {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .list-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .card-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-item:last-child { border-bottom: none; }
+
+        .card-info {
+            display: flex;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .card-box-badge {
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .btn-del {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+        }
+
+        .empty-msg {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Leitner Tizimi</h1>
+
+    <div class="progress-wrapper">
+        <div class="progress-info">
+            <span>O'zlashtirish ko'rsatkichi</span>
+            <span id="progressText">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div id="progressBar" class="progress-bar-fill"></div>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <input type="text" id="frontInput" placeholder="Savol / So'z (Oldi)">
+        <input type="text" id="backInput" placeholder="Javob / Tarjima (Orqasi)">
+        <button class="btn-add" onclick="addCard()">Qo'shish</button>
+    </div>
+
+    <div class="card-container">
+        <div class="card" id="activeCard" onclick="flipCard()">
+            <div class="card-face card-front" id="cardFront">
+                <button class="audio-btn" onclick="speakCurrent(event)">🔊</button>
+                <div>
+                    <div id="frontText"><span class="empty-msg">Kartochka mavjud emas</span></div>
+                    <div class="hint" id="frontHint">Aylantirish uchun bosing</div>
+                </div>
+            </div>
+            <div class="card-face card-back">
+                <div>
+                    <div id="cardBack">Javob</div>
+                    <div class="hint">Javob</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-action btn-wrong" onclick="processCard(false)">✕ Xato</button>
+        <button class="btn-action btn-correct" onclick="processCard(true)">✓ To'g'ri</button>
+    </div>
+
+    <div class="boxes-container">
+        <div class="box"><h3>1-Quti</h3><div class="count" id="count-1">0</div></div>
+        <div class="box"><h3>2-Quti</h3><div class="count" id="count-2">0</div></div>
+        <div class="box"><h3>3-Quti</h3><div class="count" id="count-3">0</div></div>
+        <div class="box"><h3>4-Quti</h3><div class="count" id="count-4">0</div></div>
+        <div class="box"><h3>5-Quti</h3><div class="count" id="count-5">0</div></div>
+    </div>
+
+    <div class="list-section">
+        <h2>Barcha Kartochkalar</h2>
+        <div id="cardList"></div>
+    </div>
+
+    <script>
+        let cards = JSON.parse(localStorage.getItem('leitner_cards')) || [];
+        let currentCardIndex = -1;
+
+        function saveCards() {
+            localStorage.setItem('leitner_cards', JSON.stringify(cards));
+            updateUI();
+        }
+
+        function addCard() {
+            const frontInput = document.getElementById('frontInput');
+            const backInput = document.getElementById('backInput');
+            const front = frontInput.value.trim();
+            const back = backInput.value.trim();
+
+            if (front && back) {
+                cards.push({
+                    id: Date.now(),
+                    front: front,
+                    back: back,
+                    box: 1
+                });
+
+                frontInput.value = '';
+                backInput.value = '';
+                frontInput.focus();
+                
+                saveCards();
+            }
+        }
+
+        function deleteCard(id) {
+            cards = cards.filter(c => c.id !== id);
+            saveCards();
+        }
+
+        function flipCard() {
+            const cardEl = document.getElementById('activeCard');
+            if (currentCardIndex !== -1) {
+                cardEl.classList.toggle('flipped');
+            }
+        }
+
+        function speakCurrent(event) {
+            event.stopPropagation(); // Kartochka ag'darilib ketmasligi uchun
+            if (currentCardIndex === -1) return;
+            
+            const text = cards[currentCardIndex].front;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; // Odatiy ingliz tili talaffuzi
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function processCard(isCorrect) {
+            if (currentCardIndex === -1) return;
+
+            let card = cards[currentCardIndex];
+
+            if (isCorrect) {
+                if (card.box < 5) card.box++;
+            } else {
+                card.box = 1;
+            }
+
+            const cardEl = document.getElementById('activeCard');
+            
+            if (cardEl.classList.contains('flipped')) {
+                cardEl.classList.remove('flipped');
+                setTimeout(() => {
+                    saveCards();
+                }, 350); 
+            } else {
+                cardEl.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    cardEl.style.transform = '';
+                    saveCards();
+                }, 200);
+            }
+        }
+
+        function updateUI() {
+            // Qutilar hisobi
+            for (let i = 1; i <= 5; i++) {
+                const count = cards.filter(c => c.box === i).length;
+                document.getElementById(`count-${i}`).innerText = count;
+            }
+
+            // Progress Bar
+            if (cards.length > 0) {
+                const learnedCards = cards.filter(c => c.box === 5).length;
+                const percent = Math.round((learnedCards / cards.length) * 100);
+                document.getElementById('progressBar').style.width = percent + '%';
+                document.getElementById('progressText').innerText = percent + '%';
+            } else {
+                document.getElementById('progressBar').style.width = '0%';
+                document.getElementById('progressText').innerText = '0%';
+            }
+
+            // Aktiv kartochka
+            const availableCards = cards.filter(c => c.box < 5);
+
+            if (availableCards.length > 0) {
+                const activeCard = availableCards[0];
+                currentCardIndex = cards.findIndex(c => c.id === activeCard.id);
+
+                document.getElementById('frontText').innerText = activeCard.front;
+                document.getElementById('cardBack').innerText = activeCard.back;
+                document.getElementById('frontHint').style.display = 'block';
+            } else {
+                currentCardIndex = -1;
+                document.getElementById('frontText').innerHTML = '<span class="empty-msg">Barcha kartochkalar yodlandi! 🎉</span>';
+                document.getElementById('cardBack').innerText = '';
+                document.getElementById('frontHint').style.display = 'none';
+            }
+
+            // Kartochkalar ro'yxatini chiqarish
+            const listContainer = document.getElementById('cardList');
+            listContainer.innerHTML = '';
+            
+            if(cards.length === 0) {
+                listContainer.innerHTML = '<span class="empty-msg">Ro\'yxat bo\'sh</span>';
+            } else {
+                cards.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'card-item';
+                    item.innerHTML = `
+                        <div class="card-info">
+                            <strong>${c.front}</strong> - <span>${c.back}</span>
+                            <span class="card-box-badge">${c.box}-quti</span>
+                        </div>
+                        <button class="btn-del" onclick="deleteCard(${c.id})">🗑️</button>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+        }
+
+        // Klaviatura tugmalari
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                flipCard();
+            } else if (e.code === 'ArrowLeft') {
+                processCard(false);
+            } else if (e.code === 'ArrowRight') {
+                processCard(true);
+            }
+        });
+
+        // Boshlang'ich yuklanish
+        updateUI();
+    </script>
+</body>
+</html>
