@@ -113,7 +113,7 @@
             padding: 12px; border-radius: 12px; font-weight: 600; text-align: center; margin-bottom: 20px; display: none;
         }
 
-        /* 3D Flip Card - Tezlashgan va silliqlashgan */
+        /* 3D Flip Card */
         .card-container { width: 100%; max-width: 400px; height: 250px; perspective: 1000px; margin-bottom: 24px; }
         .card { 
             width: 100%; height: 100%; position: relative; transform-style: preserve-3d; 
@@ -142,7 +142,7 @@
         .btn-wrong:active { transform: translateY(3px); box-shadow: 0 2px 0 #fca5a5; }
         .btn-correct:active { transform: translateY(3px); box-shadow: 0 2px 0 #6ee7b7; }
 
-        /* Yangi Qutilar Dizayni */
+        /* Qutilar Dizayni */
         .boxes-container {
             display: grid; 
             grid-template-columns: repeat(6, 1fr); 
@@ -177,17 +177,36 @@
         .box .count { font-size: 1.3rem; font-weight: 800; }
         .box .due { font-size: 0.7rem; color: var(--danger); font-weight: 700; margin-top: 4px; }
 
-        /* Statistics Panel */
+        /* Statistics Panel (100% Moslashuvchan Tuzatilgan) */
         .stats-section {
-            width: 100%; max-width: 600px; background: var(--card-bg); border-radius: 20px;
-            padding: 20px; box-shadow: 0 8px 0 #cbd5e1; border: 1px solid var(--border-color);
-            margin-bottom: 30px; display: none;
+            width: 100%; 
+            max-width: 600px; 
+            background: var(--card-bg); 
+            border-radius: 20px;
+            padding: 20px; 
+            box-shadow: 0 8px 0 #cbd5e1; 
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px; 
+            display: none;
+            box-sizing: border-box;
         }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
         .stat-card { background: #f8fafc; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); }
         .stat-card .num { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
         .stat-card .lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
-        .chart-container { display: flex; align-items: flex-end; gap: 8px; height: 120px; padding-top: 20px; border-top: 1px dashed var(--border-color); }
+        
+        /* Bar chart konteyneri 100% ga chegaralandi */
+        .chart-container { 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: space-between;
+            gap: 6px; 
+            height: 120px; 
+            padding-top: 20px; 
+            border-top: 1px dashed var(--border-color); 
+            width: 100%;
+            box-sizing: border-box;
+        }
 
         /* Card List */
         .list-section { width: 100%; max-width: 600px; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: 0 8px 0 #cbd5e1; border: 1px solid var(--border-color); margin-bottom: 30px; }
@@ -298,16 +317,8 @@
         let currentCardIndex = -1;
         let editingCardId = null;
 
-        // Interval kunlari (Spaced Repetition)
-        const boxIntervals = {
-            1: 0,   // Har kuni
-            2: 3,   // 3 kundan keyin
-            3: 5,   // 5 kundan keyin
-            4: 7,   // 1 haftadan keyin
-            5: 15   // 15 kundan keyin
-        };
+        const boxIntervals = { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
 
-        // Migratsiya: Eski kartochkalarga yangi atributlar biriktirish
         Object.keys(decks).forEach(deckName => {
             decks[deckName].forEach(card => {
                 if (!card.nextReview) card.nextReview = Date.now();
@@ -433,7 +444,6 @@
             if (currentCardIndex === -1) return;
             let card = decks[currentDeck][currentCardIndex];
             
-            // Log review to history for statistics
             let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
             history.push({ date: new Date().toLocaleDateString(), isCorrect, timestamp: Date.now() });
             localStorage.setItem('leitner_history', JSON.stringify(history));
@@ -499,13 +509,14 @@
                 let height = Math.round((count / maxVal) * 80) + 5;
                 
                 let barWrapper = document.createElement('div');
-                barWrapper.style.cssText = "display:flex; flex-direction:column; align-items:center; flex:1;";
+                // min-width: 0 flexbox'da o'ngga chiqib ketish xatosini oldini oladi
+                barWrapper.style.cssText = "display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;";
                 barWrapper.innerHTML = `
                     <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${count}</div>
                     <div style="width:100%; max-width:24px; background:#e2e8f0; border-radius:6px; height:80px; display:flex; align-items:flex-end; overflow:hidden;">
                         <div style="width:100%; height:${height}px; background:var(--primary); border-radius:6px;"></div>
                     </div>
-                    <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">${date.split('.')[0] || date.split('/')[0]}</div>
+                    <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px; width:100%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${date.split('.')[0] || date.split('/')[0]}</div>
                 `;
                 chartContainer.appendChild(barWrapper);
             });
@@ -592,7 +603,6 @@
             }
         }
 
-        // Export/Import
         function exportData() {
             let a = document.createElement('a');
             a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(decks));
