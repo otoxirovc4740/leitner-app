@@ -100,6 +100,8 @@
         .btn-wrong { background: var(--danger-bg); color: var(--danger); box-shadow: 0 6px 0 #fca5a5; } .btn-wrong:active { box-shadow: 0 2px 0 #fca5a5; }
         .btn-correct { background: var(--success-bg); color: var(--success); box-shadow: 0 6px 0 #6ee7b7; } .btn-correct:active { box-shadow: 0 2px 0 #6ee7b7; }
 
+        .sidebar-save-btn { display: none; animation: popPulse 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; background: var(--success); }
+
         .progress-wrapper { width: 100%; }
         .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
         .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 12px; height: 12px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
@@ -118,8 +120,8 @@
 
         .review-banner { width: 100%; background: #fffbeb; border: 1px solid #fcd34d; color: #b45309; padding: 12px; border-radius: 14px; font-weight: 700; text-align: center; display: none; animation: popPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        .card-container { width: 100%; height: 260px; perspective: 1200px; animation: floatDynamics 6s ease-in-out infinite; }
-        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; border-radius: 26px; }
+        .card-container { width: 100%; height: 260px; perspective: 1200px; }
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; border-radius: 26px; animation: floatDynamics 6s ease-in-out infinite; }
         .card:hover { filter: brightness(1.02); }
         .card.flipped { transform: rotateY(180deg); }
         
@@ -184,7 +186,7 @@
     <div class="sidebar" id="sidebar">
         <h2 style="font-size: 1.2rem; margin-bottom: 4px;">⚙️ Boshqaruv Menyu</h2>
         
-        <select id="deckSelect" onchange="changeDeck()"></select>
+        <select id="deckSelect" onchange="markSidebarChanged()"></select>
         <button class="btn-full btn-primary" onclick="createDeck()">+ Yangi To'plam</button>
         <button class="btn-full btn-edit" onclick="renameDeck()">✏️ Nomini O'zgartirish</button>
         <button class="btn-full btn-delete" onclick="deleteDeck()">🗑️ To'plamni O'chirish</button>
@@ -193,7 +195,7 @@
 
         <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted);">🌐 Tarjimonni sozlash</div>
         <div style="display: flex; gap: 6px; align-items: center;">
-            <select id="sourceLang">
+            <select id="sourceLang" onchange="markSidebarChanged()">
                 <option value="auto">🌐 Avto-aniqlash</option>
                 <option value="uz">O'zbekcha</option>
                 <option value="en">Inglizcha</option>
@@ -203,7 +205,7 @@
                 <option value="fr">Fransuzcha</option>
             </select>
             <span style="font-weight: 800; color: var(--text-muted);">➔</span>
-            <select id="targetLang">
+            <select id="targetLang" onchange="markSidebarChanged()">
                 <option value="uz" selected>O'zbekcha</option>
                 <option value="en">Inglizcha</option>
                 <option value="ru">Ruscha</option>
@@ -213,9 +215,11 @@
             </select>
         </div>
 
+        <button id="sidebarSaveBtn" class="btn-full sidebar-save-btn" onclick="saveSidebarChanges()">💾 O'zgarishlarni Saqlash</button>
+
         <hr style="border:0; border-top:1px solid var(--border-color); margin: 6px 0;">
 
-        <button class="btn-full btn-db" onclick="toggleSection('dbSection'); toggleSidebar();">??️ Baza (<span id="dbCount">0</span>)</button>
+        <button class="btn-full btn-db" onclick="toggleSection('dbSection'); toggleSidebar();">🗄️ Baza (<span id="dbCount">0</span>)</button>
         <button class="btn-full btn-info" onclick="toggleSection('statsSection'); toggleSidebar();">📊 Statistika</button>
         <button class="btn-full btn-theme" onclick="toggleSection('settingsSection'); toggleSidebar();">⚙️ Quti Sozlamalari</button>
         <button class="btn-full btn-success" onclick="toggleSection('bulkSection'); toggleSidebar();">📋 Ommaviy Import</button>
@@ -329,6 +333,10 @@
     let currentCardIndex = -1;
     let editingCardId = null;
 
+    // Saqlangan til sozlamalarini yuklash
+    document.getElementById('sourceLang').value = localStorage.getItem('leitner_source_lang') || 'auto';
+    document.getElementById('targetLang').value = localStorage.getItem('leitner_target_lang') || 'uz';
+
     Object.keys(decks).forEach(deckName => {
         decks[deckName].forEach(card => {
             if (!card.nextReview) card.nextReview = Date.now();
@@ -374,6 +382,24 @@
                 alert("Bildirishnomalarga ruxsat berilmadi.");
             }
         });
+    }
+
+    // Menyu o'zgarganda saqlash tugmasini motion animatsiya bilan chiqarish
+    function markSidebarChanged() {
+        document.getElementById('sidebarSaveBtn').style.display = 'flex';
+    }
+
+    // O'zgarishlarni saqlash va sahifani yangilamasdan interfeysni yangilash
+    function saveSidebarChanges() {
+        currentDeck = document.getElementById('deckSelect').value;
+        localStorage.setItem('leitner_current_deck', currentDeck);
+        
+        localStorage.setItem('leitner_source_lang', document.getElementById('sourceLang').value);
+        localStorage.setItem('leitner_target_lang', document.getElementById('targetLang').value);
+
+        document.getElementById('sidebarSaveBtn').style.display = 'none';
+        updateUI();
+        toggleSidebar();
     }
 
     async function autoTranslate() {
@@ -497,7 +523,6 @@
     function createDeck() { let name = prompt("Yangi to'plam nomini kiriting:"); if (name && name.trim() !== "") { name = name.trim(); if (!decks[name]) { decks[name] = []; currentDeck = name; saveAll(); toggleSidebar(); } else { alert("Bunday to'plam mavjud!"); } } }
     function renameDeck() { let newName = prompt("Yangi nom:", currentDeck); if (newName && newName.trim() !== "" && newName.trim() !== currentDeck) { newName = newName.trim(); if (decks[newName]) { alert("Mavjud!"); return; } decks[newName] = decks[currentDeck]; if (learnedDeck[currentDeck]) { learnedDeck[newName] = learnedDeck[currentDeck]; delete learnedDeck[currentDeck]; } delete decks[currentDeck]; currentDeck = newName; saveAll(); toggleSidebar(); } }
     function deleteDeck() { if (Object.keys(decks).length <= 1) { alert("Kamida 1 ta to'plam bo'lishi kerak!"); return; } if (confirm(`"${currentDeck}" o'chirilsinmi?`)) { delete decks[currentDeck]; delete learnedDeck[currentDeck]; currentDeck = Object.keys(decks)[0]; saveAll(); toggleSidebar(); } }
-    function changeDeck() { currentDeck = document.getElementById('deckSelect').value; saveAll(); }
 
     function getFormattedTags(tagStr) {
         if(!tagStr) return "";
@@ -632,8 +657,6 @@
 
     function updateUI() {
         updateXPBadge();
-        document.getElementById('activeCard').classList.remove('flipped');
-        
         let select = document.getElementById('deckSelect'); select.innerHTML = '';
         Object.keys(decks).forEach(d => { let opt = document.createElement('option'); opt.value = d; opt.innerText = d; if (d === currentDeck) opt.selected = true; select.appendChild(opt); });
 
