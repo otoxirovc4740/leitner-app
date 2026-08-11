@@ -404,7 +404,7 @@
         <button class="btn-full btn-warning" onclick="enableNotifications()">🔔 Bildirishnomalar</button>
         <button class="btn-full btn-theme" onclick="toggleDarkMode()">🌙 Tungi Rejim</button>
         <button class="btn-full btn-secondary" id="soundBtn" onclick="toggleSound()">🔊 Ovoz: Yoqilgan</button>
-        <button class="btn-full btn-success" onclick="toggleBulk(); toggleSidebar();">📋 Ommaviy So'z Yuklash (Bulk)</button>
+        <button class="btn-full btn-success" onclick="toggleBulk(); toggleSidebar();">📋 Ommaviy Lugʻat Import</button>
     </div>
 
     <div class="progress-wrapper">
@@ -416,8 +416,8 @@
     </div>
 
     <div class="input-section">
-        <input type="text" id="frontInput" placeholder="Savol / So'z (Masalan: {{cloze}} test)">
-        <input type="text" id="backInput" placeholder="Javob / Tarjima">
+        <input type="text" id="frontInput" placeholder="Savol 🔒">
+        <input type="text" id="backInput" placeholder="Javob 🔐">
         <input type="text" id="imgInput" placeholder="Rasm URL havolasi (Ixtiyoriy)">
         <button class="btn-full btn-primary" id="btnAdd" onclick="addOrUpdateCard()">Qo'shish</button>
     </div>
@@ -436,7 +436,7 @@
     <div class="card-container">
         <div class="card" id="activeCard" onclick="flipCard()">
             <div class="card-face card-front">
-                <div id="leechBadgeFront" class="leech-tag" style="display:none;">⚠️ Muammoli</div>
+                <div id="leechBadgeFront" class="leech-tag" style="display:none;">⚠️ Eslab qolishda qiynalgansiz!</div>
                 <img id="frontImg" class="card-img" style="display:none;" alt="Visual">
                 <div id="frontText">Bo'sh</div>
             </div>
