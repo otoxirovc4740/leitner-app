@@ -18,10 +18,11 @@
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-soft: 0 12px 30px -5px rgba(0, 0, 0, 0.06), 0 8px 12px -6px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 22px 35px -5px rgba(0, 0, 0, 0.12), 0 12px 12px -5px rgba(0, 0, 0, 0.05);
             --shadow-3d: 0 6px 0 #cbd5e1;
             --shadow-3d-active: 0 2px 0 #cbd5e1;
+            --spring-transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         body.dark-mode {
@@ -30,8 +31,8 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #334155;
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            --shadow-soft: 0 12px 30px -5px rgba(0, 0, 0, 0.35);
+            --shadow-hover: 0 22px 35px -5px rgba(0, 0, 0, 0.45);
             --shadow-3d: 0 6px 0 #020617;
             --shadow-3d-active: 0 2px 0 #020617;
         }
@@ -49,42 +50,54 @@
 
         .app-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 18px; }
 
-        /* Animations */
-        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
-        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        /* Motion Designer Enhancements (3x Richer & Fluid) */
+        @keyframes springIn { 
+            0% { opacity: 0; transform: translateY(35px) scale(0.92); } 
+            60% { opacity: 1; transform: translateY(-6px) scale(1.02); } 
+            100% { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+        @keyframes floatDynamics { 
+            0% { transform: translateY(0px) rotate(0deg); } 
+            50% { transform: translateY(-10px) rotate(0.6deg); } 
+            100% { transform: translateY(0px) rotate(0deg); } 
+        }
+        @keyframes popPulse { 
+            0% { transform: scale(0.85); opacity: 0; } 
+            70% { transform: scale(1.04); opacity: 1; } 
+            100% { transform: scale(1); opacity: 1; } 
+        }
 
-        .animated-section { animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animated-section { animation: springIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
         /* Top Header & Badges */
-        .header { display: flex; justify-content: space-between; align-items: center; width: 100%; animation: slideInUp 0.4s ease forwards; }
+        .header { display: flex; justify-content: space-between; align-items: center; width: 100%; animation: springIn 0.5s ease forwards; }
         .badges-container { display: flex; gap: 8px; }
 
-        .hamburger { width: 44px; height: 44px; background: var(--card-bg); border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.3s ease; z-index: 1001; }
-        .hamburger:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-        .hamburger:active { transform: translateY(4px); box-shadow: var(--shadow-3d-active); }
-        .hamburger span { width: 20px; height: 2.5px; background-color: var(--text-main); border-radius: 3px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hamburger { width: 44px; height: 44px; background: var(--card-bg); border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); transition: var(--spring-transition); z-index: 1001; }
+        .hamburger:hover { transform: translateY(-4px) scale(1.05); box-shadow: var(--shadow-hover); }
+        .hamburger:active { transform: translateY(4px) scale(0.95); box-shadow: var(--shadow-3d-active); }
+        .hamburger span { width: 20px; height: 2.5px; background-color: var(--text-main); border-radius: 3px; transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6); }
         .hamburger.active span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
-        .hamburger.active span:nth-child(2) { opacity: 0; transform: translateX(-10px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; transform: translateX(-12px); }
         .hamburger.active span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 
-        .top-badge { background: var(--card-bg); padding: 8px 12px; border-radius: 16px; font-weight: 800; font-size: 0.9rem; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; cursor: default; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .top-badge:hover { transform: scale(1.05) translateY(-2px); box-shadow: var(--shadow-hover); }
+        .top-badge { background: var(--card-bg); padding: 8px 14px; border-radius: 16px; font-weight: 800; font-size: 0.9rem; box-shadow: var(--shadow-3d); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 6px; cursor: default; transition: var(--spring-transition); }
+        .top-badge:hover { transform: scale(1.08) translateY(-3px); box-shadow: var(--shadow-hover); }
         .xp-text { color: var(--warning); }
 
-        /* Sidebar Overlay */
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* Sidebar Overlay & Menu */
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
 
-        .sidebar { position: fixed; top: 0; left: 0; width: 320px; max-width: 82vw; height: 100vh; background: var(--card-bg); z-index: 1000; transform: translateX(-100%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); padding: 80px 20px 30px 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.12); }
+        .sidebar { position: fixed; top: 0; left: 0; width: 330px; max-width: 85vw; height: 100vh; background: var(--card-bg); z-index: 1000; transform: translateX(-100%); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); padding: 80px 20px 30px 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; box-shadow: 15px 0 40px rgba(0,0,0,0.18); }
         .sidebar.active { transform: translateX(0); }
 
-        select { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-weight: 700; font-size: 0.95rem; outline: none; cursor: pointer; }
-        select:hover { border-color: var(--primary); }
+        select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-weight: 700; font-size: 0.9rem; outline: none; cursor: pointer; transition: var(--spring-transition); }
+        select:hover { border-color: var(--primary); transform: translateY(-1px); }
 
-        .btn-full { width: 100%; padding: 14px; border-radius: 14px; border: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; text-align: center; box-shadow: var(--shadow-3d); color: #fff; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-full:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); filter: brightness(1.05); }
-        .btn-full:active { transform: translateY(4px) scale(0.98); box-shadow: var(--shadow-3d-active); }
+        .btn-full { width: 100%; padding: 14px; border-radius: 14px; border: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; text-align: center; box-shadow: var(--shadow-3d); color: #fff; transition: var(--spring-transition), filter 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-full:hover { transform: translateY(-3px) scale(1.01); box-shadow: var(--shadow-hover); filter: brightness(1.08); }
+        .btn-full:active { transform: translateY(4px) scale(0.97); box-shadow: var(--shadow-3d-active); }
 
         .btn-primary { background: var(--primary); } .btn-info { background: #0284c7; } .btn-db { background: #059669; } .btn-warning { background: #d97706; } .btn-theme { background: #8b5cf6; } .btn-secondary { background: #475569; } .btn-success { background: #059669; } .btn-edit { background: #64748b; } .btn-delete { background: #ef4444; }
         .btn-wrong { background: var(--danger-bg); color: var(--danger); box-shadow: 0 6px 0 #fca5a5; } .btn-wrong:active { box-shadow: 0 2px 0 #fca5a5; }
@@ -93,73 +106,73 @@
         /* Progress Bar */
         .progress-wrapper { width: 100%; }
         .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
-        .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 12px; height: 12px; overflow: hidden; }
-        .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .progress-bar-bg { width: 100%; background: var(--border-color); border-radius: 12px; height: 12px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         /* Input Section */
-        .input-section { background: var(--card-bg); padding: 16px; border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .input-section:hover { box-shadow: var(--shadow-hover); }
-        
-        .input-group { display: flex; gap: 8px; width: 100%; }
-        .btn-auto { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); font-weight: 700; padding: 0 16px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
-        .btn-auto:hover { border-color: var(--primary); color: var(--primary); }
-        .btn-auto:active { transform: scale(0.95); }
+        .input-section { background: var(--card-bg); padding: 18px; border-radius: 22px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; width: 100%; transition: var(--spring-transition); }
+        .input-section:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
 
-        input, textarea { width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.3s ease; }
-        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); transform: translateY(-1px); }
+        .input-group { display: flex; gap: 8px; width: 100%; }
+        .btn-auto { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); font-weight: 700; padding: 0 16px; border-radius: 12px; cursor: pointer; transition: var(--spring-transition); display: flex; align-items: center; justify-content: center; white-space: nowrap; font-size: 0.85rem; box-shadow: 0 4px 0 var(--border-color); }
+        .btn-auto:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: 0 6px 0 rgba(99,102,241,0.2); }
+        .btn-auto:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--border-color); }
+
+        input, textarea { width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-main); font-size: 0.95rem; outline: none; transition: var(--spring-transition); }
+        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18); transform: translateY(-2px); }
 
         /* Review Banner */
-        .review-banner { width: 100%; background: #fffbeb; border: 1px solid #fcd34d; color: #b45309; padding: 12px; border-radius: 14px; font-weight: 700; text-align: center; display: none; animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .review-banner { width: 100%; background: #fffbeb; border: 1px solid #fcd34d; color: #b45309; padding: 12px; border-radius: 14px; font-weight: 700; text-align: center; display: none; animation: popPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         /* 3D Card */
-        .card-container { width: 100%; height: 250px; perspective: 1000px; }
-        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; border-radius: 24px; animation: float 5s ease-in-out infinite; }
-        .card:hover { filter: brightness(0.98); }
+        .card-container { width: 100%; height: 260px; perspective: 1200px; }
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; border-radius: 26px; animation: floatDynamics 6s ease-in-out infinite; }
+        .card:hover { filter: brightness(1.02); }
         .card.flipped { transform: rotateY(180deg); }
         
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; border-radius: 24px; background: var(--card-bg); font-size: 1.4rem; font-weight: 800; text-align: center; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); overflow: hidden; }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 26px; border-radius: 26px; background: var(--card-bg); font-size: 1.45rem; font-weight: 800; text-align: center; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); overflow: hidden; transition: var(--spring-transition); }
+        .card-face:hover { box-shadow: var(--shadow-hover); }
         .card-back { transform: rotateY(180deg); color: var(--primary); }
 
-        .audio-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-3d); font-size: 1.2rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .audio-btn:hover { transform: scale(1.1) translateY(-2px); box-shadow: var(--shadow-hover); }
-        .audio-btn:active { transform: scale(0.95) translateY(2px); box-shadow: var(--shadow-3d-active); }
-        .leech-tag { position: absolute; top: 15px; left: 15px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; border: 1px solid #fca5a5; font-weight: 800; animation: popIn 0.3s ease; }
+        .audio-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-3d); font-size: 1.2rem; transition: var(--spring-transition); }
+        .audio-btn:hover { transform: scale(1.15) translateY(-3px); box-shadow: var(--shadow-hover); }
+        .audio-btn:active { transform: scale(0.92) translateY(2px); box-shadow: var(--shadow-3d-active); }
+        .leech-tag { position: absolute; top: 15px; left: 15px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; border: 1px solid #fca5a5; font-weight: 800; animation: popPulse 0.4s ease; }
         .card-tags { position: absolute; bottom: 15px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
         .tag-badge { font-size: 0.7rem; background: var(--bg-color); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-weight: 700; border: 1px solid var(--border-color); }
 
-        /* Typing & Controls */
-        .typing-section { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+        /* Controls */
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
 
         /* Qutilar (Boxes) */
         .boxes-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; align-items: end; }
-        .box { background: var(--card-bg); border-radius: 16px; padding: 14px 6px; text-align: center; border: 1px solid var(--border-color); border-top: 4px solid var(--primary); box-shadow: var(--shadow-soft); cursor: pointer; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; }
-        .box:hover { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-hover); }
+        .box { background: var(--card-bg); border-radius: 18px; padding: 14px 6px; text-align: center; border: 1px solid var(--border-color); border-top: 5px solid var(--primary); box-shadow: var(--shadow-soft); cursor: pointer; transition: var(--spring-transition); }
+        .box:hover { transform: translateY(-8px) scale(1.03); box-shadow: var(--shadow-hover); }
         .box:active { transform: translateY(2px); }
         .box:nth-child(1), .box:nth-child(2), .box:nth-child(3) { grid-column: span 2; }
         .box:nth-child(4), .box:nth-child(5) { grid-column: span 3; }
         .box h3 { font-size: 0.75rem; color: var(--text-muted); transition: color 0.3s ease; }
         .box:hover h3 { color: var(--primary); }
-        .box .count { font-size: 1.3rem; font-weight: 800; margin-top: 4px; }
+        .box .count { font-size: 1.35rem; font-weight: 800; margin-top: 4px; }
         .box .due { font-size: 0.7rem; color: var(--danger); font-weight: 700; margin-top: 2px; }
 
-        /* Main Sections (Stats, DB, Bulk, Settings) */
-        .main-section { width: 100%; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: none; animation: slideInUp 0.4s ease; }
+        /* Main Sections */
+        .main-section { width: 100%; background: var(--card-bg); border-radius: 22px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: none; animation: springIn 0.5s ease; }
         
-        /* Setting Inputs */
         .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
         .setting-row input { width: 80px; text-align: center; padding: 8px; }
 
         /* Card List */
-        .list-section { width: 100%; background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
+        .list-section { width: 100%; background: var(--card-bg); border-radius: 22px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); transition: var(--spring-transition); }
+        .list-section:hover { box-shadow: var(--shadow-hover); }
         .search-bar { margin-bottom: 12px; }
-        .card-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); border-radius: 12px; transition: background 0.2s ease, transform 0.2s ease; }
-        .card-item:hover { background: var(--bg-color); transform: translateX(4px); }
+        .card-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); border-radius: 12px; transition: var(--spring-transition); }
+        .card-item:hover { background: var(--bg-color); transform: translateX(6px); }
         .card-item-actions { display: flex; gap: 10px; }
-        .action-icon { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 4px; border-radius: 8px; transition: transform 0.2s ease, background 0.2s ease; }
-        .action-icon:hover { transform: scale(1.15) rotate(5deg); background: var(--border-color); }
+        .action-icon { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 4px; border-radius: 8px; transition: var(--spring-transition); }
+        .action-icon:hover { transform: scale(1.2) rotate(8deg); background: var(--border-color); }
 
-        .hotkey-info { font-size: 0.75rem; color: var(--text-muted); text-align: center; opacity: 0.8; }
+        .hotkey-info { font-size: 0.75rem; color: var(--text-muted); text-align: center; opacity: 0.85; }
     </style>
 </head>
 <body>
@@ -180,14 +193,38 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <h2 style="font-size: 1.2rem; margin-bottom: 8px;">⚙️ Boshqaruv Menyu</h2>
+        <h2 style="font-size: 1.2rem; margin-bottom: 4px;">⚙️ Boshqaruv Menyu</h2>
         
         <select id="deckSelect" onchange="changeDeck()"></select>
         <button class="btn-full btn-primary" onclick="createDeck()">+ Yangi To'plam</button>
         <button class="btn-full btn-edit" onclick="renameDeck()">✏️ Nomini O'zgartirish</button>
         <button class="btn-full btn-delete" onclick="deleteDeck()">🗑️ To'plamni O'chirish</button>
         
-        <hr style="border:0; border-top:1px solid var(--border-color); margin: 8px 0;">
+        <hr style="border:0; border-top:1px solid var(--border-color); margin: 6px 0;">
+
+        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted);">🌐 Tarjimonni sozlash</div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+            <select id="sourceLang">
+                <option value="auto">🌐 Avto-aniqlash</option>
+                <option value="uz">O'zbekcha</option>
+                <option value="en">Inglizcha</option>
+                <option value="ru">Ruscha</option>
+                <option value="tr">Turkcha</option>
+                <option value="de">Nemischa</option>
+                <option value="fr">Fransuzcha</option>
+            </select>
+            <span style="font-weight: 800; color: var(--text-muted);">➔</span>
+            <select id="targetLang">
+                <option value="uz" selected>O'zbekcha</option>
+                <option value="en">Inglizcha</option>
+                <option value="ru">Ruscha</option>
+                <option value="tr">Turkcha</option>
+                <option value="de">Nemischa</option>
+                <option value="fr">Fransuzcha</option>
+            </select>
+        </div>
+
+        <hr style="border:0; border-top:1px solid var(--border-color); margin: 6px 0;">
 
         <button class="btn-full btn-db" onclick="toggleSection('dbSection'); toggleSidebar();">🗄️ Baza (<span id="dbCount">0</span>)</button>
         <button class="btn-full btn-info" onclick="toggleSection('statsSection'); toggleSidebar();">📊 Statistika</button>
@@ -208,18 +245,18 @@
 
     <div class="input-section animated-section">
         <div class="input-group">
-            <input type="text" id="frontInput" placeholder="Savol / Inglizcha so'z 🔒">
-            <button class="btn-auto" onclick="autoTranslate()" title="Avto Tarjima">🌐 Avto</button>
+            <input type="text" id="frontInput" placeholder="Savol / lug'at...">
+            <button class="btn-auto" onclick="autoTranslate()" title="Avto Tarjima">🌐 Tarjima</button>
         </div>
-        <input type="text" id="backInput" placeholder="Javob / Tarjimasi 🔐">
-        <input type="text" id="tagInput" placeholder="Teglar (masalan: #IELTS, #Fe'l)">
+        <input type="text" id="backInput" placeholder="Javob / tarjimasi...">
+        <input type="text" id="tagInput" placeholder="Teglar (masalan: #muhim, #lugat)">
         <button class="btn-full btn-primary" id="btnAdd" onclick="addOrUpdateCard()">Karta Qo'shish</button>
     </div>
 
     <div class="main-section" id="bulkSection">
         <h3 style="font-size:1.1rem; margin-bottom:4px;">📋 Ommaviy so'z qo'shish</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">Har bir qatorga: <b>So'z, Tarjima, #teg</b></p>
-        <textarea id="bulkInput" rows="5" placeholder="apple, olma, #meva&#10;run, yugurmoq, #fe'l"></textarea>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">Har bir qatorga: <b>Savol, Javob, #teg</b></p>
+        <textarea id="bulkInput" rows="5" placeholder="olma, apple, #meva&#10;yugurmoq, run, #fe'l"></textarea>
         <button class="btn-full btn-primary" style="margin-top: 10px;" onclick="processBulkImport()">Qo'shish</button>
     </div>
 
@@ -263,11 +300,6 @@
         </div>
     </div>
 
-    <div class="typing-section animated-section">
-        <input type="text" id="typeInput" placeholder="Javobni yozib tekshirish (Enter)..." onkeydown="if(event.key==='Enter') checkTypedAnswer()">
-        <div id="typeFeedback" style="font-size:0.85rem; font-weight:700; text-align:center; display:none; padding:8px; border-radius:8px; margin-top:4px;"></div>
-    </div>
-
     <div class="controls animated-section">
         <button class="btn-full btn-wrong" onclick="processCard(false)">✕ Xato</button>
         <button class="btn-full btn-correct" onclick="processCard(true)">✓ To'g'ri</button>
@@ -302,14 +334,12 @@
     let currentDeck = localStorage.getItem('leitner_current_deck') || "Asosiy";
     let soundEnabled = JSON.parse(localStorage.getItem('leitner_sound')) ?? true;
     
-    // Custom Intervals & Gamification
     let boxIntervals = JSON.parse(localStorage.getItem('leitner_intervals')) || { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
     let xpPoints = parseInt(localStorage.getItem('leitner_xp')) || 0;
     
     let currentCardIndex = -1;
     let editingCardId = null;
 
-    // Initialize/Migrate old data format
     Object.keys(decks).forEach(deckName => {
         decks[deckName].forEach(card => {
             if (!card.nextReview) card.nextReview = Date.now();
@@ -329,7 +359,6 @@
         return Date.now() + (nextMidnight.getTime() - uzDate.getTime());
     }
 
-    // Gamification Logic
     function updateXPBadge() {
         localStorage.setItem('leitner_xp', xpPoints);
         document.getElementById('xpCount').innerText = `${xpPoints} XP`;
@@ -344,26 +373,31 @@
         document.getElementById('levelBadge').innerHTML = `🎓 ${title} <span class="xp-text">${xpPoints} XP</span>`;
     }
 
-    // Auto Translate Logic (Using MyMemory free API)
+    // Auto Translate working with sidebar selectors
     async function autoTranslate() {
         let front = document.getElementById('frontInput').value.trim();
         if(!front) return;
         
+        let src = document.getElementById('sourceLang').value;
+        let tgt = document.getElementById('targetLang').value;
+        let langPair = src === 'auto' ? `en|${tgt}` : `${src}|${tgt}`;
+
         let btn = document.querySelector('.btn-auto');
         btn.innerText = "⏳...";
         try {
-            let res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(front)}&langpair=en|uz`);
+            let res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(front)}&langpair=${langPair}`);
             let data = await res.json();
             if(data && data.responseData && data.responseData.translatedText) {
-                document.getElementById('backInput').value = data.responseData.translatedText.toLowerCase();
+                let translated = data.responseData.translatedText.trim();
+                // If translation equals source and pair wasn't automatic fallback, try alternative
+                document.getElementById('backInput').value = translated;
             }
         } catch(e) {
             console.error("Tarjimada xatolik", e);
         }
-        btn.innerText = "🌐 Avto";
+        btn.innerText = "🌐 Tarjima";
     }
 
-    // Intervals Settings Save
     function openSettings() {
         document.getElementById('int2').value = boxIntervals[2];
         document.getElementById('int3').value = boxIntervals[3];
@@ -381,7 +415,6 @@
         alert("Oraliqlar saqlandi!");
     }
 
-    // Search / Filter Cards
     function filterCards() {
         let query = document.getElementById('searchInput').value.toLowerCase();
         let items = document.querySelectorAll('.card-list-item');
@@ -391,7 +424,6 @@
         });
     }
 
-    // UI Toggles
     function toggleSidebar() {
         document.getElementById('hamburger').classList.toggle('active');
         document.getElementById('sidebar').classList.toggle('active');
@@ -503,18 +535,6 @@
     function flipCard() { if (currentCardIndex !== -1) { playSound('flip'); document.getElementById('activeCard').classList.toggle('flipped'); } }
     function speakCurrent(event) { if(event) event.stopPropagation(); if (currentCardIndex === -1) return; let rawText = decks[currentDeck][currentCardIndex].back; let utterance = new SpeechSynthesisUtterance(rawText); utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance); }
 
-    function checkTypedAnswer() {
-        if (currentCardIndex === -1) return;
-        const typed = document.getElementById('typeInput').value.trim().toLowerCase(); if (!typed) return;
-        let rawAnswer = decks[currentDeck][currentCardIndex].back.trim().toLowerCase();
-        let isCorrect = typed === rawAnswer;
-        
-        let feedback = document.getElementById('typeFeedback'); feedback.style.display = 'block';
-        if (isCorrect) { feedback.style.color = 'var(--success)'; feedback.style.background = 'var(--success-bg)'; feedback.innerText = "To'g'ri! 🎉"; } 
-        else { feedback.style.color = 'var(--danger)'; feedback.style.background = 'var(--danger-bg)'; feedback.innerText = `Xato! Javob: ${rawAnswer}`; }
-        setTimeout(() => { document.getElementById('typeInput').value = ''; feedback.style.display = 'none'; processCard(isCorrect); }, 1300);
-    }
-
     function processCard(isCorrect) {
         if (currentCardIndex === -1) return;
         let card = decks[currentDeck][currentCardIndex];
@@ -525,7 +545,7 @@
         localStorage.setItem('leitner_history', JSON.stringify(history));
 
         document.body.classList.add(isCorrect ? 'glow-success' : 'glow-danger');
-        setTimeout(() => document.body.classList.remove(isCorrect ? 'glow-success' : 'glow-danger'), 400);
+        setTimeout(() => document.body.classList.remove(isCorrect ? 'glow-success' : 'glow-danger'), 450);
 
         if (isCorrect) { 
             xpPoints += 10; updateXPBadge();
@@ -542,7 +562,7 @@
         }
 
         let cardEl = document.getElementById('activeCard');
-        if (cardEl.classList.contains('flipped')) { cardEl.classList.remove('flipped'); setTimeout(saveAll, 400); } 
+        if (cardEl.classList.contains('flipped')) { cardEl.classList.remove('flipped'); setTimeout(saveAll, 450); } 
         else { setTimeout(saveAll, 150); }
     }
 
@@ -622,7 +642,7 @@
                 <div class="card-item-actions"><button class="action-icon" onclick="editCard(${c.id})">✏️</button><button class="action-icon" onclick="deleteCard(${c.id})">🗑️</button></div>`;
             list.appendChild(div);
         });
-        filterCards(); // Keep search active if user typed something
+        filterCards();
     }
 
     updateUI();
