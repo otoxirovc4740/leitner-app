@@ -425,12 +425,12 @@
     <div class="bulk-section" id="bulkSection">
         <h3 style="font-size:1rem;">📋 Ommaviy so'z qo'shish</h3>
         <p style="font-size:0.8rem; color:var(--text-muted);">Har bir qatorga: <b>So'z, Tarjima</b> ko'rinishida yozing:</p>
-        <textarea id="bulkInput" rows="5" placeholder="apple, olma&#10;banana, banan&#10;cat, mushuk"></textarea>
+        <textarea id="bulkInput" rows="5" placeholder="olma, apple&#10;kartoshka, potato&#10;mushuk, cat"></textarea>
         <button class="btn-full btn-primary" onclick="processBulkImport()">Saqlash va Qo'shish</button>
     </div>
 
     <div id="reviewBanner" class="review-banner">
-        Bugun takrorlashingiz kerak bo'lgan kartochkalar bor!
+        Bugun takrorlashingiz kerak bo'lgan kartochkalar bor 📮
     </div>
 
     <div class="card-container">
@@ -468,7 +468,7 @@
     </div>
 
     <div class="db-section" id="dbSection">
-        <h2 style="font-size: 1.1rem; margin-bottom: 12px;">🗄️ O'zlashtirilgan Kartalar Bazasi</h2>
+        <h2 style="font-size: 1.1rem; margin-bottom: 12px;">🗄️ O'zlashtirilgan Maʼlumotlar Bazasi</h2>
         <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">5-qutidan o'tgan barcha kartalaringiz shu bazada yig'iladi:</p>
         <div id="dbCardList"></div>
     </div>
@@ -495,8 +495,8 @@
     </div>
 
     <div class="controls">
-        <button class="btn-full btn-secondary" onclick="exportData()">📁 Saqlash (Export)</button>
-        <button class="btn-full btn-secondary" onclick="document.getElementById('importFile').click()">📥 Yuklash (Import)</button>
+        <button class="btn-full btn-secondary" onclick="exportData()">📁 Export</button>
+        <button class="btn-full btn-secondary" onclick="document.getElementById('importFile').click()">📥 Import</button>
         <input type="file" id="importFile" style="display:none;" onchange="importData(event)" accept=".json">
     </div>
 
@@ -512,7 +512,7 @@
 
     const boxIntervals = { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
 
-    // O'zbekiston vaqti (Asia/Tashkent UTC+5) bo'yicha kelasi kunning 00:00:00 vaqtini milisaniyalarda hisoblash
+    // O'zbekiston vaqti (Asia/Tashkent UTC+5) bo'yicha kelasi kunning 00:00:00 vaqtini milisoniyalarda hisoblash
     function getNextUzbekistanMidnight() {
         const now = new Date();
         const uzString = now.toLocaleString("en-US", { timeZone: "Asia/Tashkent" });
@@ -990,7 +990,7 @@
         } else {
             document.getElementById('reviewBanner').style.display = 'none';
             currentCardIndex = -1;
-            document.getElementById('frontText').innerText = "Hozircha hamma darslar tugadi! 🏖️";
+            document.getElementById('frontText').innerText = "Hozircha hamma darslar tugadi! 🏖️", "Yetarli dars qildingiz, endi dam oling! 🛋️", "Kartalar tugadi, ertaga keling! 😶‍🌫️";
             document.getElementById('cardBack').innerText = "";
             document.getElementById('frontImg').style.display = 'none';
             document.getElementById('backImg').style.display = 'none';
@@ -1001,7 +1001,7 @@
         let list = document.getElementById('cardList'); list.innerHTML = '';
         cards.forEach(c => {
             let dateStr = new Date(c.nextReview).toLocaleDateString();
-            let leechBadge = (c.fails >= 3) ? `<span style="color:#ef4444; font-size:0.75rem; font-weight:bold;"> [⚠️ Muammoli]</span>` : '';
+            let leechBadge = (c.fails >= 3) ? `<span style="color:#ef4444; font-size:0.75rem; font-weight:bold;"> [⚠️ Eslab qolishda qiynalgansiz!]</span>` : '';
             let div = document.createElement('div'); div.className = 'card-item';
             div.innerHTML = `
                 <div><strong>${c.front}</strong> - ${c.back} ${leechBadge}<br>
