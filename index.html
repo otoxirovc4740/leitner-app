@@ -383,7 +383,6 @@
 
     function updateXPBadge() {
         localStorage.setItem('leitner_xp', xpPoints);
-        document.getElementById('xpCount').innerText = `${xpPoints} XP`;
         
         let level = Math.floor(xpPoints / 150);
         let title = "O'rganuvchi";
@@ -392,7 +391,7 @@
         else if (level >= 6 && level < 10) title = "Pro";
         else if (level >= 10) title = "Master";
         
-        document.getElementById('levelBadge').innerHTML = `🎓 ${title} <span class="xp-text">${xpPoints} XP</span>`;
+        document.getElementById('levelBadge').innerHTML = `🎓 ${title} <span class="xp-text" id="xpCount">${xpPoints} XP</span>`;
     }
 
     function saveLangSettings() {
@@ -574,7 +573,6 @@
         document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan"; 
     }
 
-    // Barcha ma'lumotlarni tozalash funksiyasi (ikki marta tasdiqlash bilan)
     function clearAllData() {
         if (confirm("DIQQAT! Barcha to'plamlaringiz, o'rganilgan so'zlaringiz, XP va statistikangiz butunlay o'chib ketadi. Ishonchingiz komilmi?")) {
             if (confirm("Oxirgi ogohlantirish: Haqiqatan ham hammasini tozalamoqchimisiz?")) {
@@ -628,7 +626,7 @@
                 if (card) { card.front = front; card.back = back; card.tags = tags; }
                 editingCardId = null; document.getElementById('btnAdd').innerText = "Karta Qo'shish";
             } else {
-                decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 });
+                decks[currentDeck].push({ id: Date.now() + Math.floor(Math.random() * 1000), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 });
             }
             document.getElementById('frontInput').value = '';
             document.getElementById('backInput').value = '';
@@ -691,7 +689,7 @@
         localStorage.setItem('leitner_history', JSON.stringify(history));
 
         let cardEl = document.getElementById('activeCard');
-        cardEl.classList.remove('flipped', 'slide-in-left');
+        cardEl.classList.remove('slide-in-left');
         
         if (isCorrect) {
             cardEl.classList.add('slide-out-right');
@@ -702,7 +700,7 @@
         currentCardId = null; 
 
         setTimeout(() => {
-            cardEl.classList.remove('slide-out-right', 'slide-out-down');
+            cardEl.classList.remove('slide-out-right', 'slide-out-down', 'flipped');
 
             if (isCorrect) { 
                 xpPoints += 10; 
@@ -739,7 +737,7 @@
             if (parts.length >= 2) {
                 let front = parts[0].trim(); let back = parts[1].trim(); let tags = parts[2] ? parts[2].trim() : "";
                 if (front && back) { 
-                    decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 }); 
+                    decks[currentDeck].push({ id: Date.now() + Math.floor(Math.random() * 1000), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 }); 
                     count++; 
                 }
             }
