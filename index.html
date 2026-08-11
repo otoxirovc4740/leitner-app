@@ -359,7 +359,7 @@
     document.getElementById('sourceLang').value = sourceLangSetting;
     document.getElementById('targetLang').value = targetLangSetting;
 
-    let currentCardIndex = -1;
+    let currentCardId = null; // Indeks o'rniga ID ishlatamiz
     let editingCardId = null;
     let modalMode = ''; 
 
@@ -375,9 +375,9 @@
         const now = new Date();
         const uzString = now.toLocaleString("en-US", { timeZone: "Asia/Tashkent" });
         const uzDate = new Date(uzString);
-        const nextMidnight = new Date(uzDate);
-        nextMidnight.setHours(24, 0, 0, 0);
-        return Date.now() + (nextMidnight.getTime() - uzDate.getTime());
+        uzDate.setDate(uzDate.getDate() + 1);
+        uzDate.setHours(0, 0, 0, 0);
+        return uzDate.getTime();
     }
 
     function updateXPBadge() {
@@ -414,8 +414,6 @@
         Notification.requestPermission().then(permission => {
             if (permission === "granted") {
                 alert("Bildirishnomalar muvaffaqiyatli yoqildi! 🔔");
-            } else {
-                alert("Bildirishnomalarga ruxsat berilmadi.");
             }
         });
     }
@@ -434,14 +432,12 @@
             let res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(front)}&langpair=${langPair}`);
             let data = await res.json();
             if(data && data.responseData && data.responseData.translatedText) {
-                let translated = data.responseData.translatedText.trim();
-                document.getElementById('backInput').value = translated;
+                document.getElementById('backInput').value = data.responseData.translatedText.trim();
             } else {
                 alert("Tarjima topilmadi.");
             }
         } catch(e) {
-            console.error("Tarjimada xatolik", e);
-            alert("Tarjima qilishda xatolik yuz berdi. Internet aloqasini tekshiring.");
+            alert("Tarjima qilishda xatolik yuz berdi.");
         }
         btn.innerText = "🌐 Tarjima";
     }
@@ -493,7 +489,6 @@
             input.value = currentDeck;
             input.placeholder = "Yangi nom...";
         }
-        
         toggleSidebar();
         modal.classList.add('active');
         setTimeout(() => input.focus(), 100);
@@ -514,14 +509,11 @@
                 saveAll();
                 closeModal();
             } else {
-                alert("Bunday nomdagi to'plam allaqachon mavjud!");
+                alert("Bunday nomdagi to'plam mavjud!");
             }
         } else if (modalMode === 'rename') {
             if (val !== currentDeck) {
-                if (decks[val]) {
-                    alert("Bu nom band!");
-                    return;
-                }
+                if (decks[val]) { alert("Bu nom band!"); return; }
                 decks[val] = decks[currentDeck];
                 if (learnedDeck[currentDeck]) {
                     learnedDeck[val] = learnedDeck[currentDeck];
@@ -575,7 +567,11 @@
         } catch(e) {}
     }
 
-    function toggleSound() { soundEnabled = !soundEnabled; localStorage.setItem('leitner_sound', JSON.stringify(soundEnabled)); document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan"; }
+    function toggleSound() { 
+        soundEnabled = !soundEnabled; 
+        localStorage.setItem('leitner_sound', JSON.stringify(soundEnabled)); 
+        document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan"; 
+    }
 
     window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
@@ -593,10 +589,7 @@
     }
 
     function deleteDeck() { 
-        if (Object.keys(decks).length <= 1) { 
-            alert("Kamida 1 ta to'plam bo'lishi kerak!"); 
-            return; 
-        } 
+        if (Object.keys(decks).length <= 1) { alert("Kamida 1 ta to'plam bo'lishi kerak!"); return; } 
         if (confirm(`"${currentDeck}" to'plamini o'chirmoqchimisiz?`)) { 
             delete decks[currentDeck]; 
             delete learnedDeck[currentDeck]; 
@@ -624,7 +617,7 @@
                 if (card) { card.front = front; card.back = back; card.tags = tags; }
                 editingCardId = null; document.getElementById('btnAdd').innerText = "Karta Qo'shish";
             } else {
-                decks[currentDeck].push({ id: Date.now(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 });
+                decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 });
             }
             document.getElementById('frontInput').value = '';
             document.getElementById('backInput').value = '';
@@ -643,22 +636,37 @@
             window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('frontInput').focus();
         }
     }
-    function deleteCard(id) { if(confirm("O'chirmoqchimisiz?")) { decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id); saveAll(); } }
+    
+    function deleteCard(id) { 
+        if(confirm("O'chirmoqchimisiz?")) { 
+            decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id); 
+            saveAll(); 
+        } 
+    }
 
-    function flipCard() { if (currentCardIndex !== -1) { playSound('flip'); document.getElementById('activeCard').classList.toggle('flipped'); } }
+    function flipCard() { 
+        if (currentCardId !== null) { 
+            playSound('flip'); 
+            document.getElementById('activeCard').classList.toggle('flipped'); 
+        } 
+    }
     
     function speakCurrent(event) { 
         if(event) event.stopPropagation(); 
-        if (currentCardIndex === -1) return; 
-        let rawText = decks[currentDeck][currentCardIndex].back; 
-        let utterance = new SpeechSynthesisUtterance(rawText); 
+        if (currentCardId === null) return; 
+        let card = decks[currentDeck].find(c => c.id === currentCardId);
+        if(!card) return;
+        let utterance = new SpeechSynthesisUtterance(card.back); 
         utterance.lang = speechLang; 
         window.speechSynthesis.speak(utterance); 
     }
 
     function processCard(isCorrect) {
-        if (currentCardIndex === -1) return;
-        let card = decks[currentDeck][currentCardIndex];
+        if (currentCardId === null) return;
+        let cardList = decks[currentDeck];
+        let card = cardList.find(c => c.id === currentCardId);
+        if (!card) return;
+
         playSound(isCorrect ? 'correct' : 'wrong');
 
         let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
@@ -669,7 +677,7 @@
         let cardEl = document.getElementById('activeCard');
         cardEl.classList.remove('flipped');
         
-        // Animatsiyani qo'shish (To'g'ri: o'ngga yashil, Xato: pastga qizil)
+        // Animatsiyani qo'shish
         if (isCorrect) {
             cardEl.classList.add('slide-out-right');
         } else {
@@ -680,17 +688,20 @@
             cardEl.classList.remove('slide-out-right', 'slide-out-down');
 
             if (isCorrect) { 
-                xpPoints += 10; updateXPBadge();
+                xpPoints += 10; 
                 if (card.box < 5) {
                     card.box++; 
                     card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
                 } else {
                     if (!learnedDeck[currentDeck]) learnedDeck[currentDeck] = [];
-                    card.completedAt = new Date().toLocaleDateString(); learnedDeck[currentDeck].push(card);
+                    card.completedAt = new Date().toLocaleDateString(); 
+                    learnedDeck[currentDeck].push(card);
                     decks[currentDeck] = decks[currentDeck].filter(c => c.id !== card.id);
                 }
             } else { 
-                card.box = 1; card.nextReview = getNextUzbekistanMidnight(); card.fails = (card.fails || 0) + 1;
+                card.box = 1; 
+                card.nextReview = getNextUzbekistanMidnight(); 
+                card.fails = (card.fails || 0) + 1;
             }
 
             saveAll();
@@ -699,7 +710,7 @@
             cardEl.classList.add('slide-in-left');
             setTimeout(() => {
                 cardEl.classList.remove('slide-in-left');
-            }, 450);
+            }, 400);
         }, 350);
     }
 
@@ -710,7 +721,10 @@
             let parts = line.split(/[,;\t]/);
             if (parts.length >= 2) {
                 let front = parts[0].trim(); let back = parts[1].trim(); let tags = parts[2] ? parts[2].trim() : "";
-                if (front && back) { decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 }); count++; }
+                if (front && back) { 
+                    decks[currentDeck].push({ id: Date.now() + Math.random(), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 }); 
+                    count++; 
+                }
             }
         });
         document.getElementById('bulkInput').value = ''; toggleSection('bulkSection'); saveAll(); alert(`${count} ta so'z qo'shildi! 🎉`);
@@ -726,7 +740,8 @@
     function renderStats() {
         let history = JSON.parse(localStorage.getItem('leitner_history')) || [];
         let total = history.length; let correct = history.filter(h => h.isCorrect).length;
-        document.getElementById('statTotal').innerText = total; document.getElementById('statAccuracy').innerText = (total > 0 ? Math.round((correct / total) * 100) : 0) + '%';
+        document.getElementById('statTotal').innerText = total; 
+        document.getElementById('statAccuracy').innerText = (total > 0 ? Math.round((correct / total) * 100) : 0) + '%';
     }
 
     function exportData() {
@@ -785,20 +800,30 @@
         let available = cards.filter(c => c.nextReview <= now);
         if (available.length > 0) {
             document.getElementById('reviewBanner').style.display = 'block';
-            let randomCard = available[Math.floor(Math.random() * available.length)];
-            currentCardIndex = cards.findIndex(c => c.id === randomCard.id);
-            document.getElementById('frontText').innerText = randomCard.front;
-            document.getElementById('cardBack').innerText = randomCard.back;
-            document.getElementById('frontTags').innerHTML = getFormattedTags(randomCard.tags);
-            document.getElementById('backTags').innerHTML = getFormattedTags(randomCard.tags);
-            document.getElementById('leechBadgeFront').style.display = (randomCard.fails >= 3) ? 'block' : 'none';
+            
+            // Hozirgi tanlangan karta ID mavjudligini yoki ro'yxatda borligini tekshiramiz
+            let activeCardObj = available.find(c => c.id === currentCardId);
+            if (!activeCardObj) {
+                // Agar eski karta boshqa qutiga o'tgan bo'lsa, yangi tasodifiy kartani tanlaymiz
+                activeCardObj = available[Math.floor(Math.random() * available.length)];
+                currentCardId = activeCardObj.id;
+            }
+
+            document.getElementById('frontText').innerText = activeCardObj.front;
+            document.getElementById('cardBack').innerText = activeCardObj.back;
+            document.getElementById('frontTags').innerHTML = getFormattedTags(activeCardObj.tags);
+            document.getElementById('backTags').innerHTML = getFormattedTags(activeCardObj.tags);
+            document.getElementById('leechBadgeFront').style.display = (activeCardObj.fails >= 3) ? 'block' : 'none';
             document.getElementById('audioBtn').style.display = 'flex';
         } else {
-            document.getElementById('reviewBanner').style.display = 'none'; currentCardIndex = -1;
+            document.getElementById('reviewBanner').style.display = 'none'; 
+            currentCardId = null;
             document.getElementById('frontText').innerText = "Hozircha hamma darslar tugadi! 🏖️";
             document.getElementById('cardBack').innerText = "";
-            document.getElementById('frontTags').innerHTML = ""; document.getElementById('backTags').innerHTML = "";
-            document.getElementById('leechBadgeFront').style.display = 'none'; document.getElementById('audioBtn').style.display = 'none';
+            document.getElementById('frontTags').innerHTML = ""; 
+            document.getElementById('backTags').innerHTML = "";
+            document.getElementById('leechBadgeFront').style.display = 'none'; 
+            document.getElementById('audioBtn').style.display = 'none';
         }
 
         let list = document.getElementById('cardList'); list.innerHTML = '';
