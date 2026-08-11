@@ -359,7 +359,7 @@
     document.getElementById('sourceLang').value = sourceLangSetting;
     document.getElementById('targetLang').value = targetLangSetting;
 
-    let currentCardId = null; // Indeks o'rniga ID ishlatamiz
+    let currentCardId = null; 
     let editingCardId = null;
     let modalMode = ''; 
 
@@ -373,11 +373,10 @@
 
     function getNextUzbekistanMidnight() {
         const now = new Date();
-        const uzString = now.toLocaleString("en-US", { timeZone: "Asia/Tashkent" });
-        const uzDate = new Date(uzString);
-        uzDate.setDate(uzDate.getDate() + 1);
-        uzDate.setHours(0, 0, 0, 0);
-        return uzDate.getTime();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        return tomorrow.getTime();
     }
 
     function updateXPBadge() {
@@ -677,7 +676,6 @@
         let cardEl = document.getElementById('activeCard');
         cardEl.classList.remove('flipped');
         
-        // Animatsiyani qo'shish
         if (isCorrect) {
             cardEl.classList.add('slide-out-right');
         } else {
@@ -704,9 +702,11 @@
                 card.fails = (card.fails || 0) + 1;
             }
 
+            // MUHIM QISM: Joriy ID ni tozalaymiz, shunda updateUI yangi kartani tanlaydi
+            currentCardId = null; 
+
             saveAll();
 
-            // Keyingi karta chapdan uchib kelishi
             cardEl.classList.add('slide-in-left');
             setTimeout(() => {
                 cardEl.classList.remove('slide-in-left');
@@ -801,10 +801,8 @@
         if (available.length > 0) {
             document.getElementById('reviewBanner').style.display = 'block';
             
-            // Hozirgi tanlangan karta ID mavjudligini yoki ro'yxatda borligini tekshiramiz
             let activeCardObj = available.find(c => c.id === currentCardId);
             if (!activeCardObj) {
-                // Agar eski karta boshqa qutiga o'tgan bo'lsa, yangi tasodifiy kartani tanlaymiz
                 activeCardObj = available[Math.floor(Math.random() * available.length)];
                 currentCardId = activeCardObj.id;
             }
