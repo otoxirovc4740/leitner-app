@@ -52,7 +52,6 @@
             100% { transform: scale(1); opacity: 1; } 
         }
 
-        /* Yangi karta animatsiyalari */
         @keyframes slideInLeft {
             0% { transform: translateX(-120%) rotate(-15deg); opacity: 0; }
             100% { transform: translateX(0) rotate(0); opacity: 1; }
@@ -234,6 +233,8 @@
         <button class="btn-full btn-success" onclick="toggleSection('bulkSection'); toggleSidebar();">📋 Ommaviy Import</button>
         <button class="btn-full btn-primary" onclick="enableNotifications()">🔔 Bildirishnomalar</button>
         <button class="btn-full btn-secondary" id="soundBtn" onclick="toggleSound()">🔊 Ovoz: Yoqilgan</button>
+        
+        <button class="btn-full btn-wrong" onclick="clearAllData()">⚠️ Barcha ma'lumotlarni tozalash</button>
     </div>
 
     <div class="modal-overlay" id="customModal" onclick="closeModal(event)">
@@ -360,7 +361,7 @@
     document.getElementById('targetLang').value = targetLangSetting;
 
     let currentCardId = null; 
-    let isProcessing = false; // Tugmani tez ketma-ket bosib yuborishning oldini oluvchi qulf
+    let isProcessing = false; 
     let editingCardId = null;
     let modalMode = ''; 
 
@@ -573,6 +574,16 @@
         document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Ovoz: Yoqilgan" : "🔇 Ovoz: O'chirilgan"; 
     }
 
+    // Barcha ma'lumotlarni tozalash funksiyasi (ikki marta tasdiqlash bilan)
+    function clearAllData() {
+        if (confirm("DIQQAT! Barcha to'plamlaringiz, o'rganilgan so'zlaringiz, XP va statistikangiz butunlay o'chib ketadi. Ishonchingiz komilmi?")) {
+            if (confirm("Oxirgi ogohlantirish: Haqiqatan ham hammasini tozalamoqchimisiz?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    }
+
     window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
         if (e.code === 'Space') { e.preventDefault(); flipCard(); }
@@ -663,7 +674,7 @@
 
     function processCard(isCorrect) {
         if (isProcessing || currentCardId === null) return;
-        isProcessing = true; // Jarayon ketayotganini belgilaymiz (qulf)
+        isProcessing = true; 
 
         let cardList = decks[currentDeck];
         let card = cardList.find(c => c.id === currentCardId);
@@ -715,7 +726,7 @@
             cardEl.classList.add('slide-in-left');
             setTimeout(() => {
                 cardEl.classList.remove('slide-in-left');
-                isProcessing = false; // Animatsiya tugagach qulfni ochamiz
+                isProcessing = false; 
             }, 450);
         }, 350);
     }
