@@ -786,8 +786,7 @@
                     decks[currentDeck] = decks[currentDeck].filter(c => c.id !== card.id);
                 }
             } else { 
-                // TUZATISH: Xato qilinganda karta 1-qutida qoladi va nextReview ertangi kunga o'tkaziladi.
-                // Shunda u o'sha kunning o'zida qayta chiqib cheksiz sikl hosil qilmaydi.
+                // TUZATISH: Xato qilinganda karta 1-qutida qoladi va nextReview ertangi kunga o'tkaziladi
                 card.box = 1; 
                 card.nextReview = getNextUzbekistanMidnight(); 
                 card.fails = (card.fails || 0) + 1;
@@ -892,7 +891,13 @@
             
             let activeCardObj = available.find(c => c.id === currentCardId);
             if (!activeCardObj) {
-                activeCardObj = available[Math.floor(Math.random() * available.length)];
+                // Yangi kiritilgan mantiq: Kattaroq qutilarga ustuvorlik berish
+                available.sort((a, b) => b.box - a.box); // Qutisi balandlar ro'yxat boshiga o'tadi
+                let highestBox = available[0].box; // Eng katta quti raqamini olish
+                let priorityCards = available.filter(c => c.box === highestBox); // Faqat eng baland qutidagi kartalarni filtrlash
+                
+                // O'sha ustuvor qutidan ixtiyoriy kartani tanlash
+                activeCardObj = priorityCards[Math.floor(Math.random() * priorityCards.length)];
                 currentCardId = activeCardObj.id;
             }
 
