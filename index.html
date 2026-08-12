@@ -186,8 +186,8 @@
             <span></span>
         </div>
         <div class="badges-container">
-            <div class="top-badge" id="levelBadge" title="Tajriba va Daraja">🎓 O'rganuvchi <span class="xp-text" id="xpCount">0 XP</span></div>
-            <div class="top-badge">🔥 <span id="streakDays">0</span> </div>
+            <div class="top-badge" id="levelBadge" title="Tajriba va Daraja">🎓 Boshlang'ich <span class="xp-text" id="xpCount">0 XP</span></div>
+            <div class="top-badge">🔥 <span id="streakDays">1</span> </div>
         </div>
     </div>
 
@@ -364,7 +364,57 @@
     let isProcessing = false; 
     let editingCardId = null;
     let modalMode = ''; 
-    let autoFlipTimer = null; // Avtomatik ortga o'girish uchun taymer
+    let autoFlipTimer = null; 
+
+    // 25 ta to'liq o'zbekcha unvonlar (har 4 ta darajada yangilanadi, jami 100 daraja)
+    const uzbekTitles = [
+        "Boshlang'ich", "Qiziquvchi", "O'rganuvchi", "Izlanuvchi", 
+        "Havaskor", "Zehnli", "Topqir", "Bilimdon", 
+        "Uquvchi", "Shogird", "Tajribali", "Malakali", 
+        "Mutaxassis", "Yetuk", "Ziyoli", "Ma'rifatli", 
+        "Donishmand", "Zukko", "Zakovatli", "Ilm egasi", 
+        "Usta", "Buyuk ustoz", "Daho", "Afsona", "Mutlaq Bilim Sohibi 👑"
+    ];
+
+    // Kunlik olov (streak) va kunni tekshirish
+    function checkDailyStreak() {
+        let lastLogin = localStorage.getItem('leitner_last_login');
+        let today = new Date().toDateString();
+        let streak = parseInt(localStorage.getItem('leitner_streak')) || 1;
+
+        if (lastLogin !== today) {
+            let yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            if (lastLogin === yesterday.toDateString()) {
+                streak += 1;
+            } else if (lastLogin) {
+                streak = 1; // Uzilib qolsa 1 dan boshlanadi
+            }
+
+            localStorage.setItem('leitner_streak', streak);
+            localStorage.setItem('leitner_last_login', today);
+        }
+    }
+    checkDailyStreak();
+
+    // Olov koeffitsiyentlari (Multiplier)
+    function getStreakMultiplier(streak) {
+        if (streak >= 30) {
+            return 2.5 + Math.floor((streak - 30) / 10) * 0.5; // 30 dan keyin proporsional o'sadi
+        } else if (streak >= 20) {
+            return 2.0;
+        } else if (streak >= 15) {
+            return 1.7;
+        } else if (streak >= 10) {
+            return 1.5;
+        } else if (streak >= 5) {
+            return 1.3;
+        } else if (streak >= 3) {
+            return 1.1;
+        }
+        return 1.0;
+    }
 
     Object.keys(decks).forEach(deckName => {
         decks[deckName].forEach(card => {
@@ -382,17 +432,19 @@
         return tomorrow.getTime();
     }
 
+    // 1000 XP = 1 daraja. Unvonlar har 4 ta darajada (4000 XP) o'zgaradi.
     function updateXPBadge() {
         localStorage.setItem('leitner_xp', xpPoints);
         
-        let level = Math.floor(xpPoints / 150);
-        let title = "O'rganuvchi";
-        if (level >= 1 && level < 3) title = "Havaskor";
-        else if (level >= 3 && level < 6) title = "Talaba";
-        else if (level >= 6 && level < 10) title = "Pro";
-        else if (level >= 10) title = "Master";
+        let level = Math.floor(xpPoints / 1000) + 1;
+        let titleIndex = Math.floor((level - 1) / 4);
+        if (titleIndex >= uzbekTitles.length) titleIndex = uzbekTitles.length - 1;
+        let currentTitle = uzbekTitles[titleIndex];
         
-        document.getElementById('levelBadge').innerHTML = `🎓 ${title} <span class="xp-text" id="xpCount">${xpPoints} XP</span>`;
+        let streakDays = parseInt(localStorage.getItem('leitner_streak')) || 1;
+        document.getElementById('streakDays').innerText = streakDays;
+        
+        document.getElementById('levelBadge').innerHTML = `🎓 ${level}-daraja: ${currentTitle} <span class="xp-text" id="xpCount">${xpPoints} XP</span>`;
     }
 
     function saveLangSettings() {
@@ -646,20 +698,17 @@
         } 
     }
 
-    // YANGILANGAN: Karta bosilganda orqaga o'giriladi va 1 sekunddan keyin avtomatik oldiga qaytadi
     function flipCard() { 
         if (currentCardId !== null && !isProcessing) { 
             playSound('flip'); 
             let cardEl = document.getElementById('activeCard');
             cardEl.classList.toggle('flipped'); 
 
-            // Avvalgi taymerni tozalash (agar takroriy bosilsa)
             if (autoFlipTimer) {
                 clearTimeout(autoFlipTimer);
                 autoFlipTimer = null;
             }
 
-            // Agar karta orqa tomoniga o'girilgan bo'lsa, 0.7 sekunddan keyin oldiga qaytarish
             if (cardEl.classList.contains('flipped')) {
                 autoFlipTimer = setTimeout(() => {
                     if (cardEl.classList.contains('flipped') && !isProcessing) {
@@ -690,7 +739,6 @@
         if (isProcessing || currentCardId === null) return;
         isProcessing = true; 
 
-        // Tugma bosilganda avtomatik o'girish taymerini bekor qilish
         if (autoFlipTimer) {
             clearTimeout(autoFlipTimer);
             autoFlipTimer = null;
@@ -727,7 +775,12 @@
             cardEl.classList.remove('slide-out-right', 'slide-out-down');
 
             if (isCorrect) { 
-                xpPoints += 10; 
+                // Olov va koeffitsiyentga qarab XP qo'shish
+                let streak = parseInt(localStorage.getItem('leitner_streak')) || 1;
+                let multiplier = getStreakMultiplier(streak);
+                let earnedXP = Math.round(10 * multiplier);
+                xpPoints += earnedXP;
+
                 if (card.box < 5) {
                     card.box++; 
                     card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
