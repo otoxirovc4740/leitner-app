@@ -366,7 +366,6 @@
     let modalMode = ''; 
     let autoFlipTimer = null; 
 
-    // 25 ta to'liq o'zbekcha unvonlar (har 4 ta darajada yangilanadi, jami 100 daraja)
     const uzbekTitles = [
         "Boshlang'ich", "Qiziquvchi", "O'rganuvchi", "Izlanuvchi", 
         "Havaskor", "Zehnli", "Topqir", "Bilimdon", 
@@ -376,7 +375,6 @@
         "Usta", "Buyuk ustoz", "Daho", "Afsona", "Mutlaq Bilim Sohibi 👑"
     ];
 
-    // Kunlik olov (streak) va kunni tekshirish
     function checkDailyStreak() {
         let lastLogin = localStorage.getItem('leitner_last_login');
         let today = new Date().toDateString();
@@ -389,7 +387,7 @@
             if (lastLogin === yesterday.toDateString()) {
                 streak += 1;
             } else if (lastLogin) {
-                streak = 1; // Uzilib qolsa 1 dan boshlanadi
+                streak = 1;
             }
 
             localStorage.setItem('leitner_streak', streak);
@@ -398,10 +396,9 @@
     }
     checkDailyStreak();
 
-    // Olov koeffitsiyentlari (Multiplier)
     function getStreakMultiplier(streak) {
         if (streak >= 30) {
-            return 2.5 + Math.floor((streak - 30) / 10) * 0.5; // 30 dan keyin proporsional o'sadi
+            return 2.5 + Math.floor((streak - 30) / 10) * 0.5;
         } else if (streak >= 20) {
             return 2.0;
         } else if (streak >= 15) {
@@ -432,7 +429,6 @@
         return tomorrow.getTime();
     }
 
-    // 1000 XP = 1 daraja. Unvonlar har 4 ta darajada (4000 XP) o'zgaradi.
     function updateXPBadge() {
         localStorage.setItem('leitner_xp', xpPoints);
         
@@ -775,7 +771,6 @@
             cardEl.classList.remove('slide-out-right', 'slide-out-down');
 
             if (isCorrect) { 
-                // Olov va koeffitsiyentga qarab XP qo'shish
                 let streak = parseInt(localStorage.getItem('leitner_streak')) || 1;
                 let multiplier = getStreakMultiplier(streak);
                 let earnedXP = Math.round(10 * multiplier);
@@ -791,6 +786,8 @@
                     decks[currentDeck] = decks[currentDeck].filter(c => c.id !== card.id);
                 }
             } else { 
+                // TUZATISH: Xato qilinganda karta 1-qutida qoladi va nextReview ertangi kunga o'tkaziladi.
+                // Shunda u o'sha kunning o'zida qayta chiqib cheksiz sikl hosil qilmaydi.
                 card.box = 1; 
                 card.nextReview = getNextUzbekistanMidnight(); 
                 card.fails = (card.fails || 0) + 1;
