@@ -365,16 +365,16 @@
 </div>
 
 <script>
-// Supabase-ni ishga tushirish (Publishable Kalit qo'yildi)
+// Supabase-ni ishga tushirish (Tuzatilgan versiya - duel g'olibi)
 const supabaseUrl = 'https://avbkqgaipzgscnezeymd.supabase.co';
-const supabaseKey = 'sb_publishable_05Mnr-aLnCv-6UaDEf6_Iw_XFFuyTx-';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseKey = 'sb_publishable_fjlxnhu8mgdpoznqrl5la_svc7ezrp'; // Kichik harflarga o'girildi va to'g'rilandi
+const supaClient = window.supabase.createClient(supabaseUrl, supabaseKey); // O'zgaruvchi xatosi tuzatildi
 
 let currentUser = null;
 
 // Sessiyani tekshirish (Foydalanuvchi kirganmi?)
 async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supaClient.auth.getSession();
     
     if (session) {
         currentUser = session.user;
@@ -398,7 +398,7 @@ async function signUp() {
     const btn = document.getElementById('btnSignUp');
     btn.innerText = "⏳...";
     
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supaClient.auth.signUp({ email, password });
     
     if (error) {
         alert("Xatolik: " + error.message);
@@ -422,7 +422,7 @@ async function signIn() {
     const btn = document.getElementById('btnSignIn');
     btn.innerText = "⏳...";
     
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supaClient.auth.signInWithPassword({ email, password });
     
     if (error) {
         alert("Parol yoki Email xato!");
@@ -435,7 +435,7 @@ async function signIn() {
 // Chiqish (Logout)
 async function logOut() {
     if(confirm("Tizimdan chiqmoqchimisiz?")) {
-        await supabase.auth.signOut();
+        await supaClient.auth.signOut();
         checkSession();
     }
 }
