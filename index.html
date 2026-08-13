@@ -368,7 +368,7 @@
 // Supabase-ni ishga tushirish (Publishable Kalit qo'yildi)
 const supabaseUrl = 'https://avbkqgaipzgscnezeymd.supabase.co';
 const supabaseKey = 'sb_publishable_05Mnr-aLnCv-6UaDEf6_Iw_XFFuyTx-';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
