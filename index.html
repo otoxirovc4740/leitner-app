@@ -378,14 +378,32 @@ async function checkSession() {
 }
 
 // Ro'yxatdan o'tish (Xatolikni aniq chiqarib beradigan qilib yangilandi)
+// Ro'yxatdan o'tish
 async function signUp() {
+    alert("Tugma bosildi!"); // Tekshiruv uchun alert
+    
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value.trim();
     
     if (!email || password.length < 6) {
-        alert("⚠️ Diqqat: To'g'ri email kiriting va parol kamida 6 xonali bo'lishi kerak!");
+        alert("⚠️ Diqqat: To'g'ri email kiriting va parol kamida 6 ta belgi bo'lishi kerak!");
         return;
     }
+
+    const btn = document.getElementById('btnSignUp');
+    btn.innerText = "⏳ Kutilyapti...";
+    
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    
+    if (error) {
+        alert("❌ Xatolik yuz berdi:\n\n" + error.message);
+    } else {
+        alert("✅ Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+        checkSession();
+    }
+    btn.innerText = "Ro'yxatdan o'tish";
+}
+
 
     const btn = document.getElementById('btnSignUp');
     btn.innerText = "⏳ Kutilyapti...";
