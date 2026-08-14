@@ -173,23 +173,8 @@
 
         .hotkey-info { font-size: 0.75rem; color: var(--text-muted); text-align: center; opacity: 0.85; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="modal-overlay active" id="authOverlay" style="background: var(--bg-color); z-index: 3000; display: flex;">
-    <div class="modal-box" style="width: 90%; max-width: 350px;">
-        <h2 style="font-size: 1.5rem; text-align: center; margin-bottom: 5px;">Leitner Pro</h2>
-        <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Akkauntingizga kiring yoki ro'yxatdan o'ting</p>
-        
-        <input type="email" id="authEmail" placeholder="Email manzil..." style="margin-bottom: 10px;">
-        <input type="password" id="authPassword" placeholder="Parol (kamida 6 ta belgi)..." style="margin-bottom: 15px;">
-        
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-full btn-secondary" onclick="signUp()" id="btnSignUp">Ro'yxatdan o'tish</button>
-            <button class="btn-full btn-primary" onclick="signIn()" id="btnSignIn">Kirish</button>
-        </div>
-    </div>
-</div>
 
 <div class="app-container">
 
@@ -249,7 +234,6 @@
         <button class="btn-full btn-secondary" id="soundBtn" onclick="toggleSound()">🔊 Ovoz: Yoqilgan</button>
         
         <button class="btn-full btn-wrong" onclick="clearAllData()">⚠️ Barcha ma'lumotlarni tozalash</button>
-        <button class="btn-full btn-delete" style="margin-top: 15px;" onclick="logOut()">🚪 Tizimdan chiqish</button>
     </div>
 
     <div class="modal-overlay" id="customModal" onclick="closeModal(event)">
@@ -359,102 +343,6 @@
 </div>
 
 <script>
-const supabaseUrl = 'https://avbkqgaipzgscnezeymd.supabase.co';
-const supabaseKey = 'sb_publishable_05Mnr-aLnCv-6UaDEf6_Iw_XFFuyTx-';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-let currentUser = null;
-
-async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-        currentUser = session.user;
-        document.getElementById('authOverlay').style.display = 'none'; 
-    } else {
-        currentUser = null;
-        document.getElementById('authOverlay').style.display = 'flex'; 
-    }
-}
-
-// Ro'yxatdan o'tish (Xatolikni aniq chiqarib beradigan qilib yangilandi)
-// Ro'yxatdan o'tish
-async function signUp() {
-    alert("Tugma bosildi!"); // Tekshiruv uchun alert
-    
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value.trim();
-    
-    if (!email || password.length < 6) {
-        alert("⚠️ Diqqat: To'g'ri email kiriting va parol kamida 6 ta belgi bo'lishi kerak!");
-        return;
-    }
-
-    const btn = document.getElementById('btnSignUp');
-    btn.innerText = "⏳ Kutilyapti...";
-    
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    
-    if (error) {
-        alert("❌ Xatolik yuz berdi:\n\n" + error.message);
-    } else {
-        alert("✅ Muvaffaqiyatli ro'yxatdan o'tdingiz!");
-        checkSession();
-    }
-    btn.innerText = "Ro'yxatdan o'tish";
-}
-
-
-    const btn = document.getElementById('btnSignUp');
-    btn.innerText = "⏳ Kutilyapti...";
-    
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    
-    if (error) {
-        // Supabase-dan kelgan aniq xatoni telefon ekraniga chiqaramiz
-        alert("❌ Ro'yxatdan o'tishda xatolik:\n\n" + error.message + 
-              "\n\nMaslahat: Agar 'Signups not allowed' desa, Supabase panelidan Email sign-ups yoqilmagan.");
-    } else {
-        alert("✅ Muvaffaqiyatli ro'yxatdan o'tdingiz! Endi tizimga kirishingiz mumkin.");
-        checkSession();
-    }
-    btn.innerText = "Ro'yxatdan o'tish";
-}
-
-// Kirish (Login - Xatolikni aniq chiqarib beradigan qilib yangilandi)
-async function signIn() {
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value.trim();
-    
-    if (!email || !password) {
-        alert("⚠️ Diqqat: Email va parolni to'liq kiriting!");
-        return;
-    }
-
-    const btn = document.getElementById('btnSignIn');
-    btn.innerText = "⏳ Kutilyapti...";
-    
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    
-    if (error) {
-        // Supabase-dan kelgan aniq xatoni telefon ekraniga chiqaramiz
-        alert("❌ Kirishda xatolik:\n\n" + error.message + 
-              "\n\nMaslahat: Email yoki parol noto'g'ri bo'lishi mumkin, yoki email tasdiqlanmagan.");
-    } else {
-        checkSession();
-    }
-    btn.innerText = "Kirish";
-}
-
-async function logOut() {
-    if(confirm("Tizimdan chiqmoqchimisiz?")) {
-        await supabase.auth.signOut();
-        checkSession();
-    }
-}
-
-checkSession();
-
 let decks = JSON.parse(localStorage.getItem('leitner_decks')) || { "Asosiy": [] };
 let learnedDeck = JSON.parse(localStorage.getItem('leitner_learned')) || {};
 let currentDeck = localStorage.getItem('leitner_current_deck') || "Asosiy";
@@ -752,6 +640,13 @@ function saveAll() {
     localStorage.setItem('leitner_learned', JSON.stringify(learnedDeck));
     localStorage.setItem('leitner_current_deck', currentDeck);
     updateUI();
+}
+
+function clearAllData() {
+    if (confirm("Barcha ma'lumotlaringiz o'chib ketadi! Rozimisiz?")) {
+        localStorage.clear();
+        location.reload();
+    }
 }
 
 function deleteDeck() { 
