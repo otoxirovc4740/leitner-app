@@ -97,11 +97,6 @@
         .sidebar { position: fixed; top: 0; left: 0; width: 330px; max-width: 85vw; height: 100vh; background: var(--card-bg); z-index: 1000; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); padding: 80px 20px 30px 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; box-shadow: 20px 0 50px rgba(0,0,0,0.08); }
         .sidebar.active { transform: translateX(0); }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(6px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box { background: var(--card-bg); padding: 26px; border-radius: 26px; width: 90%; max-width: 380px; box-shadow: var(--shadow-hover); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 14px; transform: scale(0.95) translateY(10px); transition: var(--spring-transition); }
-        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); }
-
         select { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-weight: 700; font-size: 0.9rem; outline: none; cursor: pointer; transition: var(--spring-transition); }
         select:hover { border-color: var(--primary); }
 
@@ -192,15 +187,8 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <h2 style="font-size: 1.2rem; margin-bottom: 6px;">⚙️ Boshqaruv Menyu</h2>
+        <h2 style="font-size: 1.2rem; margin-bottom: 6px;">⚙️ Menyu</h2>
         
-        <select id="deckSelect" onchange="changeDeck()"></select>
-        <button class="btn-full btn-primary" onclick="openModal('create')">+ Yangi To'plam</button>
-        <button class="btn-full btn-edit" onclick="openModal('rename')">✏️ Nomini O'zgartirish</button>
-        <button class="btn-full btn-delete" onclick="deleteDeck()">🗑️ To'plamni O'chirish</button>
-        
-        <hr style="border:0; border-top:1px solid var(--border-color); margin: 8px 0;">
-
         <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted);">🌐 Tarjimonni sozlash</div>
         <div style="display: flex; gap: 6px; align-items: center;">
             <select id="sourceLang" onchange="saveLangSettings()">
@@ -234,17 +222,6 @@
         <button class="btn-full btn-secondary" id="soundBtn" onclick="toggleSound()">🔊 Ovoz: Yoqilgan</button>
         
         <button class="btn-full btn-wrong" onclick="clearAllData()">⚠️ Barcha ma'lumotlarni tozalash</button>
-    </div>
-
-    <div class="modal-overlay" id="customModal" onclick="closeModal(event)">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <h3 id="modalTitle" style="font-size: 1.1rem;">Yangi To'plam</h3>
-            <input type="text" id="modalInput" placeholder="Nomi...">
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-full btn-secondary" onclick="closeModal()">Bekor qilish</button>
-                <button class="btn-full btn-primary" id="modalSubmitBtn" onclick="submitModal()">Saqlash</button>
-            </div>
-        </div>
     </div>
 
     <div class="progress-wrapper animated-section">
@@ -329,7 +306,7 @@
     </div>
 
     <div class="list-section animated-section">
-        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">To'plamdagi Kartalar</h2>
+        <h2 style="font-size: 1.2rem; margin-bottom: 12px;">Kartalar Ro'yxati</h2>
         <input type="text" id="searchInput" class="search-bar" placeholder="🔍 So'z yoki #teg izlash..." onkeyup="filterCards()">
         <div id="cardList"></div>
     </div>
@@ -343,11 +320,20 @@
 </div>
 
 <script>
-let decks = JSON.parse(localStorage.getItem('leitner_decks')) || { "Asosiy": [] };
-let learnedDeck = JSON.parse(localStorage.getItem('leitner_learned')) || {};
-let currentDeck = localStorage.getItem('leitner_current_deck') || "Asosiy";
-let soundEnabled = JSON.parse(localStorage.getItem('leitner_sound')) ?? true;
+// Eski to'plamlar ma'lumotini o'tkazish (migratsiya) va yagona kartalar ro'yxatini yuklash
+let cards = JSON.parse(localStorage.getItem('leitner_cards'));
+if (!cards) {
+    let oldDecks = JSON.parse(localStorage.getItem('leitner_decks'));
+    cards = oldDecks ? Object.values(oldDecks).flat() : [];
+}
 
+let learnedCards = JSON.parse(localStorage.getItem('leitner_learned_cards'));
+if (!learnedCards) {
+    let oldLearned = JSON.parse(localStorage.getItem('leitner_learned'));
+    learnedCards = oldLearned ? Object.values(oldLearned).flat() : [];
+}
+
+let soundEnabled = JSON.parse(localStorage.getItem('leitner_sound')) ?? true;
 let boxIntervals = JSON.parse(localStorage.getItem('leitner_intervals')) || { 1: 0, 2: 3, 3: 5, 4: 7, 5: 15 };
 let xpPoints = parseInt(localStorage.getItem('leitner_xp')) || 0;
 
@@ -362,7 +348,6 @@ document.getElementById('targetLang').value = targetLangSetting;
 let currentCardId = null; 
 let isProcessing = false; 
 let editingCardId = null;
-let modalMode = ''; 
 let autoFlipTimer = null; 
 
 const uzbekTitles = [
@@ -405,12 +390,10 @@ function getStreakMultiplier(streak) {
     return 1.0;
 }
 
-Object.keys(decks).forEach(deckName => {
-    decks[deckName].forEach(card => {
-        if (!card.nextReview) card.nextReview = Date.now();
-        if (card.fails === undefined) card.fails = 0;
-        if (card.tags === undefined) card.tags = "";
-    });
+cards.forEach(card => {
+    if (!card.nextReview) card.nextReview = Date.now();
+    if (card.fails === undefined) card.fails = 0;
+    if (card.tags === undefined) card.tags = "";
 });
 
 function getNextUzbekistanMidnight() {
@@ -528,61 +511,6 @@ function toggleSidebar() {
     document.getElementById('sidebarOverlay').classList.toggle('active');
 }
 
-function openModal(mode) {
-    modalMode = mode;
-    const modal = document.getElementById('customModal');
-    const title = document.getElementById('modalTitle');
-    const input = document.getElementById('modalInput');
-    
-    if (mode === 'create') {
-        title.innerText = "➕ Yangi To'plam Qo'shish";
-        input.value = "";
-        input.placeholder = "To'plam nomi...";
-    } else if (mode === 'rename') {
-        title.innerText = "✏️ To'plam Nomini O'zgartirish";
-        input.value = currentDeck;
-        input.placeholder = "Yangi nom...";
-    }
-    toggleSidebar();
-    modal.classList.add('active');
-    setTimeout(() => input.focus(), 100);
-}
-
-function closeModal() {
-    document.getElementById('customModal').classList.remove('active');
-}
-
-function submitModal() {
-    const val = document.getElementById('modalInput').value.trim();
-    if (!val) return;
-
-    if (modalMode === 'create') {
-        if (!decks[val]) {
-            decks[val] = [];
-            currentDeck = val;
-            saveAll();
-            closeModal();
-        } else {
-            alert("Bunday nomdagi to'plam mavjud!");
-        }
-    } else if (modalMode === 'rename') {
-        if (val !== currentDeck) {
-            if (decks[val]) { alert("Bu nom band!"); return; }
-            decks[val] = decks[currentDeck];
-            if (learnedDeck[currentDeck]) {
-                learnedDeck[val] = learnedDeck[currentDeck];
-                delete learnedDeck[currentDeck];
-            }
-            delete decks[currentDeck];
-            currentDeck = val;
-            saveAll();
-            closeModal();
-        } else {
-            closeModal();
-        }
-    }
-}
-
 function toggleSection(sectionId) {
     let sections = ['dbSection', 'statsSection', 'bulkSection', 'settingsSection'];
     sections.forEach(id => {
@@ -636,9 +564,8 @@ window.addEventListener('keydown', (e) => {
 });
 
 function saveAll() {
-    localStorage.setItem('leitner_decks', JSON.stringify(decks));
-    localStorage.setItem('leitner_learned', JSON.stringify(learnedDeck));
-    localStorage.setItem('leitner_current_deck', currentDeck);
+    localStorage.setItem('leitner_cards', JSON.stringify(cards));
+    localStorage.setItem('leitner_learned_cards', JSON.stringify(learnedCards));
     updateUI();
 }
 
@@ -648,19 +575,6 @@ function clearAllData() {
         location.reload();
     }
 }
-
-function deleteDeck() { 
-    if (Object.keys(decks).length <= 1) { alert("Kamida 1 ta to'plam bo'lishi kerak!"); return; } 
-    if (confirm(`"${currentDeck}" to'plamini o'chirmoqchimisiz?`)) { 
-        delete decks[currentDeck]; 
-        delete learnedDeck[currentDeck]; 
-        currentDeck = Object.keys(decks)[0]; 
-        saveAll(); 
-        toggleSidebar(); 
-    } 
-}
-
-function changeDeck() { currentDeck = document.getElementById('deckSelect').value; saveAll(); }
 
 function getFormattedTags(tagStr) {
     if(!tagStr) return "";
@@ -674,11 +588,11 @@ function addOrUpdateCard() {
 
     if (front && back) {
         if (editingCardId) {
-            let card = decks[currentDeck].find(c => c.id === editingCardId);
+            let card = cards.find(c => c.id === editingCardId);
             if (card) { card.front = front; card.back = back; card.tags = tags; }
             editingCardId = null; document.getElementById('btnAdd').innerText = "Karta Qo'shish";
         } else {
-            decks[currentDeck].push({ id: Date.now() + Math.floor(Math.random() * 1000), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 });
+            cards.push({ id: Date.now() + Math.floor(Math.random() * 1000), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 });
         }
         document.getElementById('frontInput').value = '';
         document.getElementById('backInput').value = '';
@@ -688,7 +602,7 @@ function addOrUpdateCard() {
 }
 
 function editCard(id) {
-    let card = decks[currentDeck].find(c => c.id === id);
+    let card = cards.find(c => c.id === id);
     if (card) {
         document.getElementById('frontInput').value = card.front;
         document.getElementById('backInput').value = card.back;
@@ -700,7 +614,7 @@ function editCard(id) {
 
 function deleteCard(id) { 
     if(confirm("O'chirmoqchimisiz?")) { 
-        decks[currentDeck] = decks[currentDeck].filter(c => c.id !== id); 
+        cards = cards.filter(c => c.id !== id); 
         saveAll(); 
     } 
 }
@@ -730,7 +644,7 @@ function flipCard() {
 function speakCurrent(event) { 
     if(event) event.stopPropagation(); 
     if (currentCardId === null) return; 
-    let card = decks[currentDeck].find(c => c.id === currentCardId);
+    let card = cards.find(c => c.id === currentCardId);
     if(!card) return;
     
     if ('speechSynthesis' in window) {
@@ -751,8 +665,7 @@ function processCard(isCorrect) {
         autoFlipTimer = null;
     }
 
-    let cardList = decks[currentDeck];
-    let card = cardList.find(c => c.id === currentCardId);
+    let card = cards.find(c => c.id === currentCardId);
     if (!card) {
         isProcessing = false;
         return;
@@ -791,10 +704,9 @@ function processCard(isCorrect) {
                 card.box++; 
                 card.nextReview = Date.now() + (boxIntervals[card.box] * 24 * 60 * 60 * 1000);
             } else {
-                if (!learnedDeck[currentDeck]) learnedDeck[currentDeck] = [];
                 card.completedAt = new Date().toLocaleDateString(); 
-                learnedDeck[currentDeck].push(card);
-                decks[currentDeck] = decks[currentDeck].filter(c => c.id !== card.id);
+                learnedCards.push(card);
+                cards = cards.filter(c => c.id !== card.id);
             }
         } else { 
             card.box = 1; 
@@ -820,7 +732,7 @@ function processBulkImport() {
         if (parts.length >= 2) {
             let front = parts[0].trim(); let back = parts[1].trim(); let tags = parts[2] ? parts[2].trim() : "";
             if (front && back) { 
-                decks[currentDeck].push({ id: Date.now() + Math.floor(Math.random() * 1000), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 }); 
+                cards.push({ id: Date.now() + Math.floor(Math.random() * 1000), front, back, tags, box: 1, nextReview: Date.now(), fails: 0 }); 
                 count++; 
             }
         }
@@ -830,9 +742,8 @@ function processBulkImport() {
 
 function renderDatabase() {
     let listContainer = document.getElementById('dbCardList'); listContainer.innerHTML = '';
-    let items = learnedDeck[currentDeck] || [];
-    if (items.length === 0) { listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px;">Baza bo'sh.</div>`; return; }
-    items.forEach(c => { listContainer.innerHTML += `<div class="card-item"><div><strong>${c.front}</strong> - ${c.back}<br><span style="font-size:0.75rem; color:var(--success);">✅ ${c.completedAt || 'Yaqinda'}</span></div></div>`; });
+    if (learnedCards.length === 0) { listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px;">Baza bo'sh.</div>`; return; }
+    learnedCards.forEach(c => { listContainer.innerHTML += `<div class="card-item"><div><strong>${c.front}</strong> - ${c.back}<br><span style="font-size:0.75rem; color:var(--success);">✅ ${c.completedAt || 'Yaqinda'}</span></div></div>`; });
 }
 
 function renderStats() {
@@ -843,10 +754,10 @@ function renderStats() {
 }
 
 function exportData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ decks, learnedDeck, boxIntervals, xpPoints }));
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ cards, learnedCards, boxIntervals, xpPoints }));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `${currentDeck}_leitner_backup.json`);
+    downloadAnchor.setAttribute("download", `leitner_backup.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -859,15 +770,17 @@ function importData(event) {
         fileReader.onload = (e) => {
             try {
                 const parsed = JSON.parse(e.target.result);
-                if (parsed.decks) {
-                    decks = parsed.decks;
-                    learnedDeck = parsed.learnedDeck || {};
-                    if (parsed.boxIntervals) boxIntervals = parsed.boxIntervals;
-                    if (parsed.xpPoints) xpPoints = parsed.xpPoints;
-                    currentDeck = Object.keys(decks)[0] || "Asosiy";
-                    saveAll();
-                    alert("Ma'lumotlar muvaffaqiyatli import qilindi! 📥");
+                if (parsed.cards) {
+                    cards = parsed.cards;
+                    learnedCards = parsed.learnedCards || [];
+                } else if (parsed.decks) {
+                    cards = Object.values(parsed.decks).flat();
+                    learnedCards = parsed.learnedDeck ? Object.values(parsed.learnedDeck).flat() : [];
                 }
+                if (parsed.boxIntervals) boxIntervals = parsed.boxIntervals;
+                if (parsed.xpPoints) xpPoints = parsed.xpPoints;
+                saveAll();
+                alert("Ma'lumotlar muvaffaqiyatli import qilindi! 📥");
             } catch (err) {
                 alert("Faylni o'qishda xatolik yuz berdi!");
             }
@@ -877,22 +790,24 @@ function importData(event) {
 
 function updateUI() {
     updateXPBadge();
-    let select = document.getElementById('deckSelect'); select.innerHTML = '';
-    Object.keys(decks).forEach(d => { let opt = document.createElement('option'); opt.value = d; opt.innerText = d; if (d === currentDeck) opt.selected = true; select.appendChild(opt); });
-
-    let cards = decks[currentDeck] || []; let learnedCards = learnedDeck[currentDeck] || [];
     document.getElementById('dbCount').innerText = learnedCards.length;
     let now = Date.now();
 
     for (let i = 1; i <= 5; i++) {
-        let boxCards = cards.filter(c => c.box === i); let dueCards = boxCards.filter(c => c.nextReview <= now).length;
-        document.getElementById(`count-${i}`).innerText = boxCards.length; document.getElementById(`due-${i}`).innerText = dueCards > 0 ? `+${dueCards} tayyor` : '';
+        let boxCards = cards.filter(c => c.box === i); 
+        let dueCards = boxCards.filter(c => c.nextReview <= now).length;
+        document.getElementById(`count-${i}`).innerText = boxCards.length; 
+        document.getElementById(`due-${i}`).innerText = dueCards > 0 ? `+${dueCards} tayyor` : '';
     }
 
     let total = cards.length + learnedCards.length;
     if (total > 0) {
         let percent = Math.round((learnedCards.length / total) * 100);
-        document.getElementById('progressBar').style.width = percent + '%'; document.getElementById('progressText').innerText = percent + '%';
+        document.getElementById('progressBar').style.width = percent + '%'; 
+        document.getElementById('progressText').innerText = percent + '%';
+    } else {
+        document.getElementById('progressBar').style.width = '0%';
+        document.getElementById('progressText').innerText = '0%';
     }
 
     let available = cards.filter(c => c.nextReview <= now);
