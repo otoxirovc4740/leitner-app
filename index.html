@@ -134,7 +134,7 @@
         .card-face:hover { box-shadow: var(--shadow-hover); }
         .card-back { transform: rotateY(180deg); color: var(--primary); }
 
-        .audio-btn { position: absolute; top: 18px; right: 18px; background: var(--bg-color); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: var(--spring-transition); }
+        .audio-btn { position: absolute; top: 18px; right: 18px; background: var(--bg-color); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: var(--spring-transition); z-index: 10; }
         .audio-btn:hover { transform: scale(1.05) translateY(-2px); background: #f1f5f9; }
         
         .leech-tag { position: absolute; top: 18px; left: 18px; background: #fef2f2; color: #ef4444; font-size: 0.75rem; padding: 6px 12px; border-radius: 10px; border: 1px solid #fca5a5; font-weight: 800; animation: popPulse 0.4s ease; }
@@ -320,7 +320,6 @@
 </div>
 
 <script>
-// Eski to'plamlar ma'lumotini o'tkazish (migratsiya) va yagona kartalar ro'yxatini yuklash
 let cards = JSON.parse(localStorage.getItem('leitner_cards'));
 if (!cards) {
     let oldDecks = JSON.parse(localStorage.getItem('leitner_decks'));
@@ -348,7 +347,6 @@ document.getElementById('targetLang').value = targetLangSetting;
 let currentCardId = null; 
 let isProcessing = false; 
 let editingCardId = null;
-let autoFlipTimer = null; 
 
 const uzbekTitles = [
     "Boshlang'ich", "Qiziquvchi", "O'rganuvchi", "Izlanuvchi", 
@@ -395,14 +393,6 @@ cards.forEach(card => {
     if (card.fails === undefined) card.fails = 0;
     if (card.tags === undefined) card.tags = "";
 });
-
-function getNextUzbekistanMidnight() {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-    return tomorrow.getTime();
-}
 
 function updateXPBadge() {
     localStorage.setItem('leitner_xp', xpPoints);
@@ -624,20 +614,6 @@ function flipCard() {
         playSound('flip'); 
         let cardEl = document.getElementById('activeCard');
         cardEl.classList.toggle('flipped'); 
-
-        if (autoFlipTimer) {
-            clearTimeout(autoFlipTimer);
-            autoFlipTimer = null;
-        }
-
-        if (cardEl.classList.contains('flipped')) {
-            autoFlipTimer = setTimeout(() => {
-                if (cardEl.classList.contains('flipped') && !isProcessing) {
-                    cardEl.classList.remove('flipped');
-                    playSound('flip');
-                }
-            }, 700);
-        }
     } 
 }
 
@@ -660,11 +636,6 @@ function processCard(isCorrect) {
     if (isProcessing || currentCardId === null) return;
     isProcessing = true; 
 
-    if (autoFlipTimer) {
-        clearTimeout(autoFlipTimer);
-        autoFlipTimer = null;
-    }
-
     let card = cards.find(c => c.id === currentCardId);
     if (!card) {
         isProcessing = false;
@@ -680,19 +651,14 @@ function processCard(isCorrect) {
 
     let cardEl = document.getElementById('activeCard');
     
-    cardEl.classList.remove('flipped');
-    cardEl.classList.remove('slide-in-left');
-    
     if (isCorrect) {
         cardEl.classList.add('slide-out-right');
     } else {
         cardEl.classList.add('slide-out-down');
     }
 
-    currentCardId = null; 
-
     setTimeout(() => {
-        cardEl.classList.remove('slide-out-right', 'slide-out-down');
+        cardEl.classList.remove('flipped', 'slide-out-right', 'slide-out-down');
 
         if (isCorrect) { 
             let streak = parseInt(localStorage.getItem('leitner_streak')) || 1;
@@ -710,10 +676,11 @@ function processCard(isCorrect) {
             }
         } else { 
             card.box = 1; 
-            card.nextReview = getNextUzbekistanMidnight(); 
+            card.nextReview = Date.now(); 
             card.fails = (card.fails || 0) + 1;
         }
 
+        currentCardId = null;
         saveAll();
 
         cardEl.classList.add('slide-in-left');
